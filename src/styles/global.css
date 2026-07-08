@@ -1,1 +1,53 @@
-/* tokens in Task 2 */
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/400-italic.css';
+@import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/500-italic.css';
+@import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/caveat/500.css';
+@import '@fontsource/caveat/600.css';
+@import '@fontsource/caveat/700.css';
+
+:root {
+  --paper: #faf6ef;
+  --paper-card: #fffdf8;
+  --sky: #c9dfed;
+  --ink: #181a20;
+  --night: #14161c;
+  --navy: #2b3f77;
+  --blue: #4a76b8;
+  --blue-light: #6aa7cc;
+  --red: #e8442e;
+  --coral: #f08a67;
+  --text-2: #33363f;
+  --text-3: #5a5e69;
+  --text-on-dark: #c8cad2;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'EB Garamond', serif;
+  --font-hand: 'Caveat', cursive;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* exactly this — never overflow:hidden (feathers rely on vertical overflow) */
+}
+::selection { background: var(--sky); color: var(--ink); }
+p { text-wrap: pretty; }
+a { color: var(--navy); }
+a:hover { color: var(--red); }
+
+.container { max-width: 1140px; margin: 0 auto; }
+.section { padding: 120px 28px; scroll-margin-top: 84px; position: relative; }
+
+@keyframes featherFall { 0% { transform: translateY(-24vh); } 100% { transform: translateY(124vh); } }
+@keyframes featherSway { 0% { transform: translateX(-30px) rotate(-14deg); } 50% { transform: translateX(30px) rotate(10deg); } 100% { transform: translateX(-30px) rotate(-14deg); } }
+@keyframes cueBob { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(9px); opacity: 1; } }
+@keyframes inkDrift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(2.5%, 3.5%) scale(1.07); } }
+
+#map-escalire .leaflet-popup-content-wrapper,
+#map-escalire .leaflet-popup-tip { background: var(--paper-card); color: var(--text-2); font-family: var(--font-body); }
