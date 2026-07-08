@@ -24,12 +24,21 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
+    <script is:inline>
+      (function () {
+        var stored = localStorage.getItem('escalire-animations');
+        var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.documentElement.dataset.intensite =
+          stored || (reduced ? 'discret' : 'immersif');
+      })();
+    </script>
   </head>
   <body>
     <Nav />
     {annonce && <p class="annonce" role="status">{annonce}</p>}
     <slot />
     <Footer />
+    <script src="../scripts/site.js"></script>
   </body>
 </html>
 <style>
