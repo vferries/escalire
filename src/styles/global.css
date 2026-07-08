@@ -18,6 +18,10 @@
   --blue: #4a76b8;
   --blue-light: #6aa7cc;
   --red: #e8442e;
+  /* AA-safe variant of --red for Caveat kicker text on light backgrounds:
+     #e8442e on --paper is 3.68:1 (fails 4.5:1 normal-text AA at this
+     non-bold size); darkened per DESIGN.md divergence rule, hue preserved. */
+  --red-ink: #c73a26;
   --coral: #f08a67;
   --text-2: #33363f;
   --text-3: #5a5e69;
