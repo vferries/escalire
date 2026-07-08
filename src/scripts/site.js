@@ -101,6 +101,8 @@ function setupReveals() {
         if (!entry.isIntersecting) return;
         const el = entry.target;
         requestAnimationFrame(() => {
+          // user may have switched to "discret" after setup: reveal instantly
+          if (amp() === 0) el.style.transition = 'none';
           el.style.opacity = el.dataset.rvOpacity || '1';
           el.style.transform = el.dataset.rvBase || 'none';
           if (el.dataset.reveal === 'ink-text') el.style.filter = 'blur(0px)';
@@ -208,9 +210,13 @@ function setupIntensity(onScroll) {
     radio.addEventListener('change', () => {
       if (!radio.checked) return;
       document.documentElement.dataset.intensite = radio.value;
-      localStorage.setItem(STORAGE_KEY, radio.value);
       onScroll();
       rebuildFeathers();
+      try {
+        localStorage.setItem(STORAGE_KEY, radio.value);
+      } catch (e) {
+        console.warn('escalire: localStorage unavailable', e);
+      }
     });
   });
 }
