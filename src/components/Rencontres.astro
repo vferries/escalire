@@ -38,7 +38,7 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
       style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
     ></div>
     <div class="eve-splat" style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}></div>
-    <div id="events-feathers" class="eve-feathers"></div>
+    <div id="events-feathers" class="eve-feathers" aria-hidden="true" data-base={base}></div>
   </div>
 
   <div class="eve-grid">

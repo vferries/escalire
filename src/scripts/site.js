@@ -32,6 +32,8 @@ function setupScroll() {
     };
   });
 
+  let lastY = window.scrollY;
+
   const onScroll = () => {
     const a = amp();
     const y = window.scrollY;
@@ -51,6 +53,11 @@ function setupScroll() {
         p.el.style.transform = `rotate(${p.rot}deg)`;
       }
     }
+
+    // scroll-velocity gust: pushes feathers, decays via rAF loop (see accumulateGust)
+    const dy = y - lastY;
+    lastY = y;
+    accumulateGust(dy);
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -193,11 +200,144 @@ function highlightToday() {
   });
 }
 
-// --- Intensity setting UI -----------------------------------------------------
+// --- Falling feathers + scroll gust -------------------------------------------
+//
+// Ported from design/escalire-source.html:
+// - mkSeeds ranges: lines 1601-1614
+// - gust accumulation (scroll handler): lines 1647-1651
+// - gust decay loop: lines 1695-1707
+// - 3-wrapper DOM (outer/fall/sway/tinted-mask): lines 1785-1815
+// - soft opacity factor: line 1783
+
+const HERO_PALETTE = ['#e8442e', '#f08a67', '#2b3f77', '#4a76b8', '#6aa7cc', '#23252b'];
+const EVENTS_PALETTE = ['#f08a67', '#6aa7cc', '#c9dfed', '#e8442e', '#4a76b8', '#faf6ef'];
+
+function mkSeeds(n, colors) {
+  return Array.from({ length: n }, (_, i) => ({
+    left: 2 + Math.random() * 96,
+    dur: 15 + Math.random() * 17,
+    delay: -Math.random() * 30,
+    sway: 3.4 + Math.random() * 3.6,
+    w: 26 + Math.random() * 28,
+    o: 0.55 + Math.random() * 0.4,
+    rot: -40 + Math.random() * 80,
+    depth: 0.45 + Math.random() * 0.95,
+    blur: Math.random() < 0.3 ? 1.4 : 0,
+    flip: Math.random() < 0.5,
+    color: colors[i % colors.length],
+  }));
+}
+
+// Seeds are generated once and reused across rebuilds: intensity changes only
+// change how many are shown (slice) and their opacity (soft factor), not the
+// underlying random layout.
+const heroSeeds = mkSeeds(20, HERO_PALETTE);
+const eventSeeds = mkSeeds(14, EVENTS_PALETTE);
+
+// Outer wrapper elements currently in the DOM, with their depth, for the gust loop.
+let activeFeathers = [];
+
+let gust = 0;
+let gustRaf = null;
+
+function stepGust() {
+  gust *= 0.9;
+  if (Math.abs(gust) < 0.1) gust = 0;
+  for (const f of activeFeathers) {
+    f.el.style.transform = `translateY(${(-gust * f.depth).toFixed(1)}px)`;
+  }
+  if (amp() === 0 || gust === 0) {
+    gustRaf = null;
+    return;
+  }
+  gustRaf = requestAnimationFrame(stepGust);
+}
+
+function accumulateGust(dy) {
+  gust = Math.max(-150, Math.min(150, gust + dy * 0.4));
+  if (amp() > 0 && gustRaf === null) {
+    gustRaf = requestAnimationFrame(stepGust);
+  }
+}
+
+function featherMaskUrl(container) {
+  const base =
+    container.dataset.base ?? document.querySelector('#map-escalire')?.dataset.base ?? '/escalire/';
+  return `${base}assets/feather-mask.png`;
+}
+
+// 3 wrappers: outer (position + gust translateY) / fall (linear) / sway
+// (sinusoidal) / innermost tinted mask div. Keep them separate — merging the
+// transforms breaks the independent animations (see CLAUDE.md).
+function buildFeather(seed, maskUrl) {
+  const outer = document.createElement('div');
+  outer.style.cssText = `position:absolute; top:0; left:${seed.left}%; will-change:transform;`;
+
+  const fall = document.createElement('div');
+  fall.style.animation = `featherFall ${seed.dur}s linear ${seed.delay}s infinite`;
+
+  const sway = document.createElement('div');
+  sway.style.animation = `featherSway ${seed.sway}s ease-in-out ${seed.delay}s infinite`;
+
+  const feather = document.createElement('div');
+  feather.style.cssText = [
+    `width:${seed.w}px`,
+    'aspect-ratio:636/1220',
+    `background:${seed.color}`,
+    `-webkit-mask-image:url(${maskUrl})`,
+    `mask-image:url(${maskUrl})`,
+    '-webkit-mask-size:100% 100%',
+    'mask-size:100% 100%',
+    '-webkit-mask-repeat:no-repeat',
+    'mask-repeat:no-repeat',
+    `opacity:${seed.opacity}`,
+    `transform:rotate(${seed.rot}deg)${seed.flip ? ' scaleX(-1)' : ''}`,
+    seed.blur ? 'filter:blur(1.4px)' : '',
+  ].join(';');
+
+  sway.appendChild(feather);
+  fall.appendChild(sway);
+  outer.appendChild(fall);
+  return outer;
+}
+
+function fillLayer(container, seeds, count, soft) {
+  const maskUrl = featherMaskUrl(container);
+  const shown = seeds.slice(0, count);
+  const built = shown.map((seed) => {
+    const outer = buildFeather({ ...seed, opacity: seed.o * soft }, maskUrl);
+    container.appendChild(outer);
+    return { el: outer, depth: seed.depth };
+  });
+  return built;
+}
 
 function rebuildFeathers() {
-  // implemented in Task 11 (falling feathers)
+  const heroContainer = document.getElementById('hero-feathers');
+  const eventsContainer = document.getElementById('events-feathers');
+
+  activeFeathers = [];
+  if (heroContainer) heroContainer.replaceChildren();
+  if (eventsContainer) eventsContainer.replaceChildren();
+
+  const intensite = document.documentElement.dataset.intensite;
+  if (intensite === 'discret') return; // no feathers
+
+  const soft = intensite === 'equilibre' ? 0.6 : 1;
+  const heroCount = intensite === 'equilibre' ? Math.round(heroSeeds.length / 2) : heroSeeds.length;
+  const eventsCount =
+    intensite === 'equilibre' ? Math.round(eventSeeds.length / 2) : eventSeeds.length;
+
+  if (heroContainer) activeFeathers.push(...fillLayer(heroContainer, heroSeeds, heroCount, soft));
+  if (eventsContainer)
+    activeFeathers.push(...fillLayer(eventsContainer, eventSeeds, eventsCount, soft));
+
+  if (amp() > 0 && Math.abs(gust) >= 0.1 && gustRaf === null) {
+    gustRaf = requestAnimationFrame(stepGust);
+  }
 }
+
+// --- Intensity setting UI -----------------------------------------------------
 
 function setupIntensity(onScroll) {
   const radios = document.querySelectorAll('input[name="intensite"]');
@@ -228,4 +368,5 @@ setupHeroEntrance();
 setupReveals();
 setupMap();
 highlightToday();
+rebuildFeathers();
 setupIntensity(onScroll);
