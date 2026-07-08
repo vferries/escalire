@@ -1,0 +1,78 @@
+---
+const base = import.meta.env.BASE_URL;
+const links: [string, string][] = [
+  ['#librairie', 'La librairie'],
+  ['#coups-de-coeur', 'Coups de cœur'],
+  ['#evenements', 'Rencontres'],
+  ['#equipe', "L'équipe"],
+  ['#infos', 'Horaires & accès'],
+];
+---
+<div id="progress-bar" aria-hidden="true"></div>
+<nav id="site-nav" aria-label="Navigation principale">
+  <a href="#accueil" class="nav-logo">
+    <img src={`${base}assets/logo-escalire.png`} alt="Librairie Escalire" width="77" height="38" />
+  </a>
+  <div class="nav-links">
+    {links.map(([href, label], i) => (
+      <a href={href} class={i === links.length - 1 ? 'nav-cta' : undefined}>{label}</a>
+    ))}
+  </div>
+</nav>
+<style>
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 40;
+    background: linear-gradient(90deg, var(--red), var(--navy) 60%, var(--blue-light));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  #site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 12px 28px;
+    background: rgba(250, 246, 239, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(24, 26, 32, 0.07);
+    transition: box-shadow 0.4s ease;
+  }
+  #site-nav.scrolled { box-shadow: 0 8px 26px rgba(24, 30, 50, 0.1); }
+
+  .nav-logo { display: flex; align-items: center; }
+  .nav-logo img { height: 38px; display: block; width: auto; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    font-family: var(--font-body);
+    font-size: 16px;
+    letter-spacing: 0.04em;
+  }
+  .nav-links a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links a:hover { color: var(--red); }
+  .nav-links a.nav-cta {
+    color: var(--paper);
+    background: var(--ink);
+    padding: 8px 18px;
+    border-radius: 999px;
+    transition: background 0.3s ease;
+  }
+  .nav-links a.nav-cta:hover { color: var(--paper); background: var(--navy); }
+</style>
