@@ -44,6 +44,25 @@ a:hover { color: var(--red); }
 .container { max-width: 1140px; margin: 0 auto; }
 .section { padding: 120px 28px; scroll-margin-top: 84px; position: relative; }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
 @keyframes featherFall { 0% { transform: translateY(-24vh); } 100% { transform: translateY(124vh); } }
 @keyframes featherSway { 0% { transform: translateX(-30px) rotate(-14deg); } 50% { transform: translateX(30px) rotate(10deg); } 100% { transform: translateX(-30px) rotate(-14deg); } }
 @keyframes cueBob { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(9px); opacity: 1; } }

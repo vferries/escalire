@@ -21,7 +21,7 @@ const facebook = infos?.data.facebook ?? '';
 
 const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}` : undefined;
 ---
-<section id="evenements" class="section evenements">
+<section id="evenements" class="section evenements" aria-labelledby="evenements-heading">
   <div aria-hidden="true" class="eve-bg">
     <div class="eve-glow eve-glow--navy"></div>
     <div class="eve-glow eve-glow--red"></div>
@@ -44,7 +44,7 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
   <div class="eve-grid">
     <div>
       <p data-reveal="up" class="kicker">rencontres &amp; dédicaces</p>
-      <h2 data-reveal="ink-text" data-delay="80">La librairie reçoit celles et ceux qui écrivent</h2>
+      <h2 id="evenements-heading" data-reveal="ink-text" data-delay="80">La librairie reçoit celles et ceux qui écrivent</h2>
       <div
         data-reveal="ink"
         data-delay="220"
@@ -78,7 +78,7 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
     <div data-reveal="up" data-delay="160" class="polaroid">
       {next ? (
         next.data.link ? (
-          <a href={next.data.link} target="_blank" rel="noopener" class="polaroid-link">
+          <a href={next.data.link} target="_blank" rel="noopener" class="polaroid-link" aria-label={next.data.title}>
             {affiche ? (
               <img src={affiche} alt={next.data.title} loading="lazy" />
             ) : (

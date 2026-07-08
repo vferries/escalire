@@ -27,7 +27,7 @@ const chipColors = [
   'var(--coral)',
 ];
 ---
-<section id="librairie" class="section librairie">
+<section id="librairie" class="section librairie" aria-labelledby="librairie-heading">
   <div aria-hidden="true" class="librairie-bg">
     <div
       class="librairie-feather"
@@ -41,7 +41,7 @@ const chipColors = [
   <div class="librairie-grid">
     <div>
       <p data-reveal="up" class="kicker">la librairie</p>
-      <h2 data-reveal="ink-text" data-delay="80">{titre}</h2>
+      <h2 id="librairie-heading" data-reveal="ink-text" data-delay="80">{titre}</h2>
       <div
         data-reveal="ink"
         data-delay="220"

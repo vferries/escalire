@@ -15,7 +15,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
 const feather = `${base}assets/feather.png`;
 ---
 {entries.length > 0 && (
-  <section id="coups-de-coeur" class="section coups-de-coeur">
+  <section id="coups-de-coeur" class="section coups-de-coeur" aria-labelledby="coups-de-coeur-heading">
     <div aria-hidden="true" class="cdc-bg">
       <div
         class="cdc-feather"
@@ -34,7 +34,7 @@ const feather = `${base}assets/feather.png`;
     <div class="cdc-inner">
       <div class="cdc-heading">
         <p data-reveal="up" class="kicker">le petit mot du libraire</p>
-        <h2 data-reveal="ink-text" data-delay="80">Nos coups de cœur du moment</h2>
+        <h2 id="coups-de-coeur-heading" data-reveal="ink-text" data-delay="80">Nos coups de cœur du moment</h2>
         <div
           data-reveal="ink"
           data-delay="220"
@@ -50,7 +50,7 @@ const feather = `${base}assets/feather.png`;
           </div>
         ))}
         <div data-reveal="up" data-delay={60 + entries.length * 120} class="votre-card">
-          <img aria-hidden="true" src={feather} alt="" class="votre-feather" />
+          <img aria-hidden="true" src={feather} alt="" loading="lazy" class="votre-feather" />
           <p class="votre-titre">Et le vôtre ?</p>
           <p class="votre-text">Poussez la porte, racontez-nous vos dernières lectures : on a toujours une pile d'idées à vous tendre.</p>
           <p class="votre-note">conseils garantis sans algorithme</p>

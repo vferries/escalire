@@ -18,7 +18,7 @@ const telHref = `tel:+33${telDigits}`;
 
 const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Escalquens';
 ---
-<section id="infos" class="section infos">
+<section id="infos" class="section infos" aria-labelledby="infos-heading">
   <div aria-hidden="true" class="inf-bg">
     <div
       class="inf-feather"
@@ -31,7 +31,7 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
   <div class="inf-inner">
     <div class="inf-heading">
       <p data-reveal="up" class="kicker">on vous attend</p>
-      <h2 data-reveal="ink-text" data-delay="80">Infos pratiques</h2>
+      <h2 id="infos-heading" data-reveal="ink-text" data-delay="80">Infos pratiques</h2>
       <div
         data-reveal="ink"
         data-delay="220"

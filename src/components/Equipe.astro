@@ -12,7 +12,7 @@ const inkSplat = `${base}assets/ink-splat.png`;
 const brushStroke = `${base}assets/brush-stroke.png`;
 ---
 {members.length > 0 && (
-  <section id="equipe" class="section equipe">
+  <section id="equipe" class="section equipe" aria-labelledby="equipe-heading">
     <div aria-hidden="true" class="eq-bg">
       <div
         class="eq-feather"
@@ -30,7 +30,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
 
     <div class="eq-inner">
       <p data-reveal="up" class="kicker">derrière le comptoir</p>
-      <h2 data-reveal="ink-text" data-delay="80">L'équipe</h2>
+      <h2 id="equipe-heading" data-reveal="ink-text" data-delay="80">L'équipe</h2>
       <div
         data-reveal="ink"
         data-delay="220"
