@@ -77,15 +77,23 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
 
     <div data-reveal="up" data-delay="160" class="polaroid">
       {next ? (
-        <a href={next.data.link ?? undefined} target={next.data.link ? '_blank' : undefined} rel={next.data.link ? 'noopener' : undefined} class="polaroid-link">
-          {affiche ? (
-            <img src={affiche} alt={next.data.title} loading="lazy" />
-          ) : (
-            <div class="polaroid-fallback" aria-hidden="true">
-              <strong>{next.data.title}</strong>
-            </div>
-          )}
-        </a>
+        next.data.link ? (
+          <a href={next.data.link} target="_blank" rel="noopener" class="polaroid-link">
+            {affiche ? (
+              <img src={affiche} alt={next.data.title} loading="lazy" />
+            ) : (
+              <div class="polaroid-fallback" aria-hidden="true">
+                <strong>{next.data.title}</strong>
+              </div>
+            )}
+          </a>
+        ) : affiche ? (
+          <img src={affiche} alt={next.data.title} loading="lazy" />
+        ) : (
+          <div class="polaroid-fallback" aria-hidden="true">
+            <strong>{next.data.title}</strong>
+          </div>
+        )
       ) : (
         <div class="polaroid-fallback" aria-hidden="true">
           <strong>Prochaine rencontre — affiche à venir</strong>

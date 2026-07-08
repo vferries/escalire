@@ -46,7 +46,16 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
         <div class="horaires">
           {rows.map((r) => (
             <div class:list={['horaires-row', { closed: r.texte === 'fermé' }]} data-jours={r.jours.join(',')}>
-              <span>{r.label}</span><span>{r.texte}</span>
+              <span>{r.label}</span>
+              <span>
+                {/* mockup (line 1548) stacks morning / afternoon on two lines */}
+                {r.texte.split(' / ').map((part, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {part}
+                  </>
+                ))}
+              </span>
             </div>
           ))}
         </div>
@@ -280,7 +289,7 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
     width: 100%;
     height: 380px;
     border-radius: 6px;
-    background: var(--sky);
+    background: #dcebf5; /* no matching token; exact mockup value (line 1570) */
     position: relative;
     z-index: 0;
     overflow: hidden;
