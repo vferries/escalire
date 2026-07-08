@@ -1,0 +1,25 @@
+[
+  {
+    "id": "infos",
+    "horaires": {
+      "lundi": { "matin": null, "apresMidi": null },
+      "mardi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
+      "mercredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
+      "jeudi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
+      "vendredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
+      "samedi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
+      "dimanche": { "matin": null, "apresMidi": null }
+    },
+    "annonce": "",
+    "telephone": "05 62 80 68 50",
+    "email": "contact@escalire.fr",
+    "adresse": {
+      "lignes": ["Centre Commercial Espace 61", "61 avenue de Toulouse", "31750 Escalquens"],
+      "lat": 43.5155,
+      "lng": 1.5487
+    },
+    "instagram": "https://www.instagram.com/librairie_escalire/",
+    "facebook": "https://www.facebook.com/escalirelibrairie",
+    "placeDesLibraires": "https://www.placedeslibraires.fr/librairie-6038/escalquens/Escalire/"
+  }
+]
