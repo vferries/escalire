@@ -1,9 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import TornEdge from '../components/TornEdge.astro';
+import Librairie from '../components/Librairie.astro';
 ---
 <Base
   title="Librairie Escalire — librairie indépendante à Escalquens"
   description="Librairie indépendante à Escalquens (Espace 61) : conseils de libraires, commandes dans la journée, rencontres d'auteurs et dédicaces."
 >
-  <main><!-- sections land here in Tasks 7–9 --></main>
+  <Hero />
+  <main>
+    <TornEdge color="var(--paper)" />
+    <Librairie />
+    <!-- remaining sections land here in Tasks 8–9 -->
+  </main>
 </Base>

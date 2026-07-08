@@ -1,0 +1,261 @@
+---
+import { getEntry } from 'astro:content';
+
+const textes = await getEntry('textes', 'textes');
+const slogan = textes?.data.slogan ?? '';
+const sousTitre = textes?.data.sousTitre ?? '';
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const inkSplat = `${base}assets/ink-splat.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+---
+<header id="accueil" class="hero">
+  <div id="hero-bg" aria-hidden="true" class="hero-bg">
+    <div class="hero-blob hero-blob--a"></div>
+    <div class="hero-blob hero-blob--b"></div>
+    <div
+      class="parallax-feather pf-1"
+      data-parallax="0.07"
+      data-rot="-24"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+    <div
+      class="parallax-feather pf-2"
+      data-parallax="0.13"
+      data-rot="22"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+    <div class="hero-splat" style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}></div>
+  </div>
+
+  <div id="hero-feathers" class="hero-feathers" aria-hidden="true"></div>
+
+  <div id="hero-art" class="hero-art">
+    <div
+      data-entrance="4"
+      aria-hidden="true"
+      class="hero-splat-small"
+      style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
+    ></div>
+    <img
+      data-entrance="0"
+      src={`${base}assets/logo-escalire.png`}
+      alt="Librairie Escalire"
+      class="hero-logo"
+      fetchpriority="high"
+    />
+    <p data-entrance="1" class="hero-subtitle">{sousTitre}</p>
+    <div data-entrance="2" class="hero-slogan">
+      <span
+        aria-hidden="true"
+        class="hero-slogan-brush"
+        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+      ></span>
+      <span class="hero-slogan-text">{slogan}</span>
+    </div>
+    <div data-entrance="3" class="hero-cta">
+      <a href="#librairie" class="btn btn-primary">Découvrir la librairie</a>
+      <a href="#infos" class="btn btn-outline">Horaires &amp; accès</a>
+    </div>
+    <a href="#librairie" class="scroll-cue">
+      défiler
+      <div class="scroll-cue-line" aria-hidden="true"></div>
+    </a>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    /* #c9dfed matches --sky exactly; outer stops have no matching token */
+    background: linear-gradient(180deg, #d6e7f3 0%, var(--sky) 55%, #bfd8e9 100%);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: -10%;
+    pointer-events: none;
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .hero-blob--a {
+    top: 8%;
+    left: -6%;
+    width: 46vw;
+    height: 46vw;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 65%);
+    animation: inkDrift 16s ease-in-out infinite;
+  }
+  .hero-blob--b {
+    bottom: -4%;
+    right: -8%;
+    width: 52vw;
+    height: 52vw;
+    background: radial-gradient(circle, rgba(43, 63, 119, 0.14), rgba(43, 63, 119, 0) 62%);
+    animation: inkDrift 20s ease-in-out infinite reverse;
+  }
+  .parallax-feather {
+    position: absolute;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .pf-1 {
+    left: 3%;
+    top: 12%;
+    width: min(400px, 40vw);
+    aspect-ratio: 636 / 1220;
+    background: #ffffff;
+    opacity: 0.5;
+    transform: rotate(-24deg);
+  }
+  .pf-2 {
+    right: 7%;
+    bottom: 10%;
+    width: min(200px, 22vw);
+    aspect-ratio: 636 / 1220;
+    background: var(--navy);
+    opacity: 0.15;
+    transform: rotate(22deg) scaleX(-1);
+  }
+  .hero-splat {
+    position: absolute;
+    top: 12%;
+    right: 14%;
+    width: min(340px, 34vw);
+    aspect-ratio: 1;
+    background: #ffffff;
+    opacity: 0.4;
+    transform: rotate(24deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .hero-feathers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-art {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 120px 24px 76px;
+    max-width: 760px;
+  }
+  .hero-splat-small {
+    position: absolute;
+    right: -6%;
+    top: 36%;
+    width: 92px;
+    aspect-ratio: 1;
+    background: var(--red);
+    opacity: 0.85;
+    transform: rotate(14deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .hero-logo {
+    width: min(540px, 82vw);
+    height: auto;
+    filter: drop-shadow(0 18px 30px rgba(24, 38, 70, 0.18));
+  }
+  .hero-subtitle {
+    margin: 34px 0 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(22px, 3.2vw, 30px);
+    color: #1c2540; /* no matching token; exact mockup value (line 1369) */
+    line-height: 1.35;
+  }
+  .hero-slogan {
+    position: relative;
+    display: inline-block;
+    margin-top: 16px;
+    transform: rotate(-1.5deg);
+  }
+  .hero-slogan-brush {
+    position: absolute;
+    inset: -12px -30px -16px -30px;
+    background: var(--ink);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .hero-slogan-text {
+    position: relative;
+    font-family: var(--font-hand);
+    font-size: clamp(24px, 3.2vw, 31px);
+    color: var(--paper);
+    padding: 0 8px;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 17px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 999px;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .btn-primary {
+    color: var(--paper);
+    background: var(--ink);
+  }
+  .btn-primary:hover {
+    background: var(--navy);
+    transform: translateY(-2px);
+  }
+  .btn-outline {
+    color: var(--ink);
+    border: 1.5px solid rgba(24, 26, 32, 0.55);
+  }
+  .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .scroll-cue {
+    margin-top: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: cueBob 2.8s ease-in-out infinite;
+    color: var(--navy);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+  }
+  .scroll-cue-line {
+    width: 1px;
+    height: 46px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+</style>
