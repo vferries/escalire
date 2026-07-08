@@ -1,10 +1,9 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import BookCard from './BookCard.astro';
+import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
 
-const entries = (await getCollection('coupsDeCoeur', (e) => e.data.visible))
-  .sort((a, b) => a.data.ordre - b.data.ordre)
-  .slice(0, 6);
+const entries = selectCoupsDeCoeur(await getCollection('coupsDeCoeur'));
 
 const infos = await getEntry('infos', 'infos');
 const placeDesLibraires = infos?.data.placeDesLibraires ?? '';
