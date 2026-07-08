@@ -17,7 +17,7 @@
   - `DESIGN.md` — tokens, typography, effects. On conflict with the mockup, the mockup wins for exact values; DESIGN.md wins for intent.
   - Old repo to reuse from: `/home/vincent/projects/old/escalire-bak` (canonical path).
 - **Language:** site copy 100 % French; code, comments, commits in English.
-- **Base path:** the site will deploy at `https://vferries.github.io/escalire/`. `astro.config.mjs` sets `base: '/escalire'`. EVERY asset URL and internal link in components must be built with `import.meta.env.BASE_URL` (never hardcode `/assets/...`).
+- **Base path:** the site will deploy at `https://vferries.github.io/escalire/`. `astro.config.mjs` sets `base: '/escalire/'` (trailing slash — Astro's `trailingSlash: 'ignore'` default would otherwise leave `BASE_URL` without one and break `${base}asset` joins). EVERY asset URL and internal link in components must be built with `import.meta.env.BASE_URL` (never hardcode `/assets/...`).
 - **Node:** >= 22 (`.nvmrc` = `22`).
 - **CSS:** design tokens as CSS custom properties in `src/styles/global.css` (`--paper`, `--navy`, …). Component styles in scoped `<style>` blocks in `.astro` files.
 - **Animations:** IntersectionObserver + transform/opacity only. Respect `prefers-reduced-motion` AND the client-persisted intensity setting (`immersif`/`equilibre`/`discret`, localStorage key `escalire-animations`).
@@ -121,7 +121,8 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://vferries.github.io',
-  base: '/escalire',
+  // trailing slash required: BASE_URL keeps it, so `${base}assets/...` joins stay valid
+  base: '/escalire/',
 });
 ```
 
