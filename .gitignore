@@ -1,0 +1,7 @@
+> Fichiers générés par l'environnement de design — ne pas commiter dans le repo produit.
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.*
