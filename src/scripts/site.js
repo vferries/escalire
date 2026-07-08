@@ -247,6 +247,9 @@ function stepGust() {
     f.el.style.transform = `translateY(${(-gust * f.depth).toFixed(1)}px)`;
   }
   if (amp() === 0 || gust === 0) {
+    // drop any leftover gust: switching back from "discret" must not resume
+    // decay from a stale magnitude (rebuilt feathers would visibly jump)
+    gust = 0;
     gustRaf = null;
     return;
   }
@@ -254,8 +257,9 @@ function stepGust() {
 }
 
 function accumulateGust(dy) {
+  if (amp() === 0) return; // no feathers in "discret": don't build up stale gust
   gust = Math.max(-150, Math.min(150, gust + dy * 0.4));
-  if (amp() > 0 && gustRaf === null) {
+  if (Math.abs(gust) >= 0.1 && gustRaf === null) {
     gustRaf = requestAnimationFrame(stepGust);
   }
 }
@@ -292,7 +296,7 @@ function buildFeather(seed, maskUrl) {
     'mask-repeat:no-repeat',
     `opacity:${seed.opacity}`,
     `transform:rotate(${seed.rot}deg)${seed.flip ? ' scaleX(-1)' : ''}`,
-    seed.blur ? 'filter:blur(1.4px)' : '',
+    seed.blur ? 'filter:blur(1.4px)' : 'filter:none',
   ].join(';');
 
   sway.appendChild(feather);
