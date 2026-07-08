@@ -326,4 +326,9 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
     font-size: 22px;
     color: var(--text-2);
   }
+
+  @media (max-width: 720px) {
+    .evenements { padding: 72px 20px; }
+    .polaroid { transform: rotate(0.8deg); }
+  }
 </style>

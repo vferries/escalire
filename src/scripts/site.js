@@ -328,9 +328,10 @@ function rebuildFeathers() {
   if (intensite === 'discret') return; // no feathers
 
   const soft = intensite === 'equilibre' ? 0.6 : 1;
-  const heroCount = intensite === 'equilibre' ? Math.round(heroSeeds.length / 2) : heroSeeds.length;
-  const eventsCount =
-    intensite === 'equilibre' ? Math.round(eventSeeds.length / 2) : eventSeeds.length;
+  const narrow = window.innerWidth <= 720; // fewer feathers on small screens: less clutter, lighter DOM
+  const factor = (intensite === 'equilibre' ? 0.5 : 1) * (narrow ? 0.5 : 1);
+  const heroCount = Math.round(heroSeeds.length * factor);
+  const eventsCount = Math.round(eventSeeds.length * factor);
 
   if (heroContainer) activeFeathers.push(...fillLayer(heroContainer, heroSeeds, heroCount, soft));
   if (eventsContainer)

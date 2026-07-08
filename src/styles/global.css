@@ -51,3 +51,7 @@ a:hover { color: var(--red); }
 
 #map-escalire .leaflet-popup-content-wrapper,
 #map-escalire .leaflet-popup-tip { background: var(--paper-card); color: var(--text-2); font-family: var(--font-body); }
+
+@media (max-width: 720px) {
+  .section { padding: 72px 20px; }
+}
