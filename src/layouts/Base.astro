@@ -34,6 +34,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         } catch (e) {
           console.warn('escalire: localStorage unavailable', e);
         }
+        if (!['immersif', 'equilibre', 'discret'].includes(stored)) stored = null;
         var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
         document.documentElement.dataset.intensite =
           stored || (reduced ? 'discret' : 'immersif');

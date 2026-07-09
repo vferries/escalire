@@ -277,8 +277,11 @@ function accumulateGust(dy) {
 }
 
 function featherMaskUrl(container) {
+  // data-base (rendered from import.meta.env.BASE_URL) is the primary source;
+  // fall back to the same env value directly, in case a container element is
+  // ever added without the attribute.
   const base =
-    container.dataset.base ?? document.querySelector('#map-escalire')?.dataset.base ?? '/escalire/';
+    container.dataset.base ?? document.querySelector('#map-escalire')?.dataset.base ?? import.meta.env.BASE_URL;
   return `${base}assets/feather-mask.png`;
 }
 
