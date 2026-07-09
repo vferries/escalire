@@ -71,7 +71,9 @@ const jsonLd = {
     {/* escape < so CMS-edited strings can never close the script tag */}
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\u003c')} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
-    <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
+    {/* fetchpriority must match the Hero <img>'s hint: the preload's own priority
+       wins over the later <img>, and images preload at "Low" by default */}
+    <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} fetchpriority="high" />
     <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
     <script is:inline>
       document.documentElement.dataset.intensite = matchMedia('(prefers-reduced-motion: reduce)').matches
