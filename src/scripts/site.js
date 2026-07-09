@@ -1,5 +1,5 @@
 // Client behaviors: progress bar, nav shadow, parallax, hero entrance, scroll
-// reveals, lazy Leaflet map, current-day highlight, feather field.
+// reveals, click-to-load Leaflet map (RGPD), current-day highlight, feather field.
 //
 // Ported from design/escalire-source.html (lines 1647-1770). "intensite" is
 // now derived only from prefers-reduced-motion (immersif|discret), no user
@@ -184,20 +184,19 @@ function initMap(el) {
 }
 
 function setupMap() {
-  const el = document.getElementById('map-escalire');
+  const el = document.querySelector('#map-escalire');
   if (!el) return;
-
-  const io = new IntersectionObserver(
-    (observed) => {
-      observed.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        initMap(el);
-      });
-    },
-    { rootMargin: '400px' },
-  );
-  io.observe(el);
+  const btn = el.querySelector('.map-consent');
+  if (!btn) return;
+  btn.addEventListener('click', (e) => {
+    // Leaflet attaches its own click listener to #map-escalire inside initMap();
+    // without stopping propagation here, this same click event keeps bubbling
+    // into that brand-new listener and is read as "user clicked the map",
+    // which auto-closes the popup we just opened.
+    e.stopPropagation();
+    btn.remove();
+    initMap(el); // Leaflet is bundled; only the CARTO tile requests are deferred
+  }, { once: true });
 }
 
 // --- Current-day highlight ---------------------------------------------------
