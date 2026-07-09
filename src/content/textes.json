@@ -1,11 +1,8 @@
-[
-  {
-    "id": "textes",
-    "slogan": "des livres qui donnent des ailes",
-    "sousTitre": "Librairie indépendante à Escalquens",
-    "librairieTitre": "Un lieu pour lire, flâner et se laisser conseiller",
-    "librairieP1": "Une sélection de titres dans tous les domaines, choisie et défendue par des libraires qui lisent ce qu'ils conseillent. Littérature en langue étrangère (anglais, espagnol), scolaire et parascolaire, prise de commandes, chèques cadeaux.",
-    "librairieP2": "Les commandes sont traitées dans la journée — et un livre coûte le même prix partout, alors autant le choisir chez votre libraire.",
-    "rayons": ["Littérature", "Jeunesse", "Bande dessinée", "Policier", "Science-fiction", "Essais", "Pratique", "Voyage", "Beaux-arts", "VO anglais & espagnol"]
-  }
-]
+{
+  "slogan": "des livres qui donnent des ailes",
+  "sousTitre": "Librairie indépendante à Escalquens",
+  "librairieTitre": "Un lieu pour lire, flâner et se laisser conseiller",
+  "librairieP1": "Une sélection de titres dans tous les domaines, choisie et défendue par des libraires qui lisent ce qu'ils conseillent. Littérature en langue étrangère (anglais, espagnol), scolaire et parascolaire, prise de commandes, chèques cadeaux.",
+  "librairieP2": "Les commandes sont traitées dans la journée — et un livre coûte le même prix partout, alors autant le choisir chez votre libraire.",
+  "rayons": ["Littérature", "Jeunesse", "Bande dessinée", "Policier", "Science-fiction", "Essais", "Pratique", "Voyage", "Beaux-arts", "VO anglais & espagnol"]
+}
