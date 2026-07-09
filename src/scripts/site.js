@@ -76,12 +76,16 @@ function setupHeroEntrance() {
   );
 
   entries.forEach((el) => {
-    const base = el.style.transform && el.style.transform !== 'none' ? el.style.transform : '';
+    // Read the stylesheet transform (computed matrix, or 'none') rather than
+    // el.style.transform: our tilts live in scoped <style> blocks, not inline
+    // attributes, so el.style.transform is empty even when a CSS tilt exists.
+    const computed = getComputedStyle(el).transform;
+    const base = computed === 'none' ? '' : computed;
     el.dataset.rvBase = base;
     el.dataset.rvOpacity = getComputedStyle(el).opacity;
     el.style.transition = 'none';
     el.style.opacity = '0';
-    el.style.transform = `${base} translateY(26px)`;
+    el.style.transform = `${base} translateY(26px)`.trim();
   });
 
   requestAnimationFrame(() => {
@@ -90,7 +94,9 @@ function setupHeroEntrance() {
         el.style.transition = `opacity 1s ${EASE}, transform 1.1s ${EASE}`;
         setTimeout(() => {
           el.style.opacity = el.dataset.rvOpacity;
-          el.style.transform = el.dataset.rvBase || 'none';
+          // Clear the inline transform so the stylesheet value (including any
+          // active media-query override) takes over; don't freeze it as 'none'.
+          el.style.transform = '';
         }, 90 + i * 140);
       });
     });
@@ -111,7 +117,9 @@ function setupReveals() {
           // user may have switched to "discret" after setup: reveal instantly
           if (amp() === 0) el.style.transition = 'none';
           el.style.opacity = el.dataset.rvOpacity || '1';
-          el.style.transform = el.dataset.rvBase || 'none';
+          // Clear the inline transform so the stylesheet value (including any
+          // active media-query override) takes over; don't freeze it as 'none'.
+          el.style.transform = '';
           if (el.dataset.reveal === 'ink-text') el.style.filter = 'blur(0px)';
         });
         io.unobserve(el);
@@ -127,7 +135,11 @@ function setupReveals() {
 
     const kind = el.dataset.reveal;
     const delay = `${el.dataset.delay || 0}ms`;
-    const base = el.style.transform && el.style.transform !== 'none' ? el.style.transform : '';
+    // Read the stylesheet transform (computed matrix, or 'none') rather than
+    // el.style.transform: our tilts live in scoped <style> blocks, not inline
+    // attributes, so el.style.transform is empty even when a CSS tilt exists.
+    const computed = getComputedStyle(el).transform;
+    const base = computed === 'none' ? '' : computed;
     const dist = 30 * a;
 
     el.dataset.rvBase = base;
@@ -137,14 +149,14 @@ function setupReveals() {
 
     if (kind === 'ink') {
       el.style.transformOrigin = 'left center';
-      el.style.transform = `${base} scaleX(0)`;
+      el.style.transform = `${base} scaleX(0)`.trim();
     } else if (kind === 'pop') {
-      el.style.transform = `${base} scale(0.3) rotate(-24deg)`;
+      el.style.transform = `${base} scale(0.3) rotate(-24deg)`.trim();
     } else if (kind === 'ink-text') {
       el.style.filter = 'blur(10px)';
-      el.style.transform = `${base} translateY(${dist * 0.5}px)`;
+      el.style.transform = `${base} translateY(${dist * 0.5}px)`.trim();
     } else if (kind === 'up') {
-      el.style.transform = `${base} translateY(${dist}px)`;
+      el.style.transform = `${base} translateY(${dist}px)`.trim();
     }
     io.observe(el);
   });
