@@ -1,0 +1,31 @@
+---
+// Torn-paper separator between two sections of different background colors.
+// Trap: overlaps the section above by -90px (margin-top), so it must sit
+// above that section's content (z-index) while that section stays
+// `position: relative` for the stacking context to work.
+interface Props {
+  color: string;
+}
+const { color } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const maskUrl = `${base}assets/ink-edge.png`;
+---
+<div
+  aria-hidden="true"
+  class="torn"
+  style={`background:${color}; -webkit-mask-image:url(${maskUrl}); mask-image:url(${maskUrl});`}
+></div>
+<style>
+  .torn {
+    height: 90px;
+    margin: -90px 0 0;
+    position: relative;
+    /* mockup (line 1383) uses z-index: 3, overriding the brief's z-index: 2 */
+    z-index: 3;
+    pointer-events: none;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+</style>

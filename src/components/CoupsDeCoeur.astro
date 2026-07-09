@@ -1,0 +1,232 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BookCard from './BookCard.astro';
+import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
+
+const entries = selectCoupsDeCoeur(await getCollection('coupsDeCoeur'));
+
+const infos = await getEntry('infos', 'infos');
+const placeDesLibraires = infos?.data.placeDesLibraires ?? '';
+
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const inkSplat = `${base}assets/ink-splat.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+const feather = `${base}assets/feather.png`;
+---
+{entries.length > 0 && (
+  <section id="coups-de-coeur" class="section coups-de-coeur" aria-labelledby="coups-de-coeur-heading">
+    <div aria-hidden="true" class="cdc-bg">
+      <div
+        class="cdc-feather"
+        data-parallax="0.09"
+        data-rot="-18"
+        style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+      ></div>
+      <div
+        data-reveal="pop"
+        data-delay="380"
+        class="cdc-splat"
+        style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
+      ></div>
+    </div>
+
+    <div class="cdc-inner">
+      <div class="cdc-heading">
+        <p data-reveal="up" class="kicker">le petit mot du libraire</p>
+        <h2 id="coups-de-coeur-heading" data-reveal="ink-text" data-delay="80">Nos coups de cœur du moment</h2>
+        <div
+          data-reveal="ink"
+          data-delay="220"
+          class="brush-underline"
+          style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+        ></div>
+      </div>
+
+      <div class="cdc-grid">
+        {entries.map((entry, i) => (
+          <div data-reveal="up" data-delay={60 + i * 120}>
+            <BookCard entry={entry} flip={i % 2 === 1} />
+          </div>
+        ))}
+        <div data-reveal="up" data-delay={60 + entries.length * 120} class="votre-card">
+          <img aria-hidden="true" src={feather} alt="" loading="lazy" class="votre-feather" />
+          <p class="votre-titre">Et le vôtre ?</p>
+          <p class="votre-text">Poussez la porte, racontez-nous vos dernières lectures : on a toujours une pile d'idées à vous tendre.</p>
+          <p class="votre-note">conseils garantis sans algorithme</p>
+        </div>
+      </div>
+
+      <div data-reveal="up" data-delay="200" class="closing-cta">
+        <p class="closing-line">Envie de commander ? Commandes traitées dans la journée.</p>
+        <a href={placeDesLibraires} target="_blank" rel="noopener" class="pill pill-fill">Commander sur Place des Libraires</a>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .coups-de-coeur {
+    background: linear-gradient(180deg, #e9f1f8, #dcebf5);
+  }
+  .cdc-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .cdc-feather {
+    position: absolute;
+    left: 1%;
+    top: 80px;
+    width: min(330px, 32vw);
+    aspect-ratio: 636 / 1220;
+    background: var(--navy);
+    opacity: 0.1;
+    transform: rotate(-18deg) scaleX(-1);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .cdc-splat {
+    position: absolute;
+    top: 60px;
+    right: 12%;
+    width: 110px;
+    aspect-ratio: 1;
+    background: var(--red);
+    opacity: 0.8;
+    transform: rotate(-10deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .cdc-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  .cdc-heading {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .kicker {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 26px;
+    color: var(--navy);
+  }
+  h2 {
+    margin: 6px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .brush-underline {
+    width: 190px;
+    height: 20px;
+    margin: 16px auto 0;
+    background: var(--navy);
+    opacity: 0.9;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .cdc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 40px;
+    margin-top: 70px;
+    align-items: stretch;
+  }
+  .cdc-grid > [data-reveal] {
+    display: flex;
+  }
+  .cdc-grid > [data-reveal] > :global(.book-card) {
+    width: 100%;
+  }
+
+  .votre-card {
+    border: 2px dashed rgba(43, 63, 119, 0.4);
+    border-radius: 8px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .votre-feather {
+    width: 66px;
+    height: auto;
+    transform: rotate(14deg);
+    filter: drop-shadow(0 8px 14px rgba(24, 30, 50, 0.2));
+  }
+  .votre-titre {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--navy);
+  }
+  .votre-text {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-2);
+    max-width: 260px;
+  }
+  .votre-note {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 22px;
+    color: var(--red-ink);
+    transform: rotate(-2deg);
+  }
+
+  .closing-cta {
+    margin: 46px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .closing-line {
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 17px;
+    color: #4a4e59; /* no matching token; exact mockup value (line 1458) */
+  }
+  /* Same pill recipe as the hero primary CTA (Hero.astro .btn-primary). */
+  .pill {
+    font-family: var(--font-body);
+    font-size: 17px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 13px 26px;
+    border-radius: 999px;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .pill-fill {
+    color: var(--paper);
+    background: var(--ink);
+  }
+  .pill-fill:hover {
+    background: var(--navy);
+    transform: translateY(-2px);
+  }
+</style>

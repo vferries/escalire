@@ -1,0 +1,87 @@
+---
+import { getEntry } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const infos = await getEntry('infos', 'infos');
+const telephone = infos?.data.telephone ?? '';
+const email = infos?.data.email ?? '';
+const instagram = infos?.data.instagram ?? '';
+const facebook = infos?.data.facebook ?? '';
+const placeDesLibraires = infos?.data.placeDesLibraires ?? '';
+const year = new Date().getFullYear();
+---
+<footer>
+  <img
+    aria-hidden="true"
+    src={`${base}assets/feather.png`}
+    alt=""
+    loading="lazy"
+    class="footer-feather"
+  />
+  <div class="footer-inner">
+    <img src={`${base}assets/logo-escalire.png`} alt="Librairie Escalire" loading="lazy" class="footer-logo" />
+    <p class="footer-tagline">Librairie indépendante à Escalquens — Sicoval</p>
+    <div class="footer-links">
+      <a href={instagram} target="_blank" rel="noopener">Instagram</a>
+      <a href={facebook} target="_blank" rel="noopener">Facebook</a>
+      <a href={placeDesLibraires} target="_blank" rel="noopener">Place des Libraires</a>
+      <a href="https://escalire.fr/MentionsLegales.html" target="_blank" rel="noopener">Mentions légales</a>
+    </div>
+    <p class="footer-copyright">© {year} Librairie Escalire — {telephone} — {email}</p>
+  </div>
+</footer>
+<style>
+  footer {
+    position: relative;
+    background: var(--sky);
+    padding: 70px 28px 44px;
+    overflow: hidden;
+  }
+  .footer-feather {
+    position: absolute;
+    right: 5%;
+    bottom: -34px;
+    width: 140px;
+    height: auto;
+    transform: rotate(26deg);
+    opacity: 0.9;
+  }
+  .footer-inner {
+    position: relative;
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    text-align: center;
+  }
+  .footer-logo { height: 64px; }
+  .footer-tagline {
+    margin: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 20px;
+    color: #1c2540; /* no matching token; exact mockup value (line 1581) */
+  }
+  .footer-links {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: 16px;
+  }
+  .footer-links a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .footer-links a:hover { color: var(--red); }
+  .footer-copyright {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #4a5468; /* no matching token; exact mockup value (line 1588) */
+  }
+</style>

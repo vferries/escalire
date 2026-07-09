@@ -1,0 +1,309 @@
+---
+import { getEntry } from 'astro:content';
+import { groupHoraires } from '../lib/horaires';
+
+const infos = await getEntry('infos', 'infos');
+const data = infos!.data;
+const rows = groupHoraires(data.horaires);
+
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+
+const placeDesLibraires = data.placeDesLibraires;
+
+// tel: link expects +33 followed by the number without leading 0 or spaces.
+const telDigits = data.telephone.replace(/\D/g, '').replace(/^0/, '');
+const telHref = `tel:+33${telDigits}`;
+
+const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Escalquens';
+---
+<section id="infos" class="section infos" aria-labelledby="infos-heading">
+  <div aria-hidden="true" class="inf-bg">
+    <div
+      class="inf-feather"
+      data-parallax="0.08"
+      data-rot="28"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+  </div>
+
+  <div class="inf-inner">
+    <div class="inf-heading">
+      <p data-reveal="up" class="kicker">on vous attend</p>
+      <h2 id="infos-heading" data-reveal="ink-text" data-delay="80">Infos pratiques</h2>
+      <div
+        data-reveal="ink"
+        data-delay="220"
+        class="brush-underline"
+        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+      ></div>
+    </div>
+
+    <div class="inf-cards">
+      <div data-reveal="up" data-delay="60" class="card">
+        <p class="card-title">Horaires</p>
+        <div class="horaires">
+          {rows.map((r) => (
+            <div class:list={['horaires-row', { closed: r.texte === 'fermé' }]} data-jours={r.jours.join(',')}>
+              <span>{r.label}</span>
+              <span>
+                {/* mockup (line 1548) stacks morning / afternoon on two lines */}
+                {r.texte.split(' / ').map((part, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {part}
+                  </>
+                ))}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p class="card-note">le samedi, venez tôt pour les nouveautés !</p>
+      </div>
+
+      <div data-reveal="up" data-delay="180" class="card">
+        <p class="card-title">Adresse &amp; contact</p>
+        <p class="card-text">
+          {data.adresse.lignes.map((ligne, i) => (
+            <>
+              {i > 0 && <br />}
+              {ligne}
+            </>
+          ))}
+        </p>
+        <p class="card-text card-contact">
+          <a href={telHref}>{data.telephone}</a>
+          <br />
+          <a href={`mailto:${data.email}`} class="card-email">{data.email}</a>
+        </p>
+        <a href={itineraire} target="_blank" rel="noopener" class="pill-dark">Itinéraire</a>
+      </div>
+
+      <div data-reveal="up" data-delay="300" class="card">
+        <p class="card-title">Bon à savoir</p>
+        <div class="savoir">
+          <p><span class="savoir-dot" style="background: var(--red);"></span>Pass Culture, Carte Jeune Occitanie, chèques lire &amp; culture acceptés</p>
+          <p><span class="savoir-dot" style="background: var(--navy);"></span>Chèques cadeaux — le livre s'offre bien</p>
+          <p><span class="savoir-dot" style="background: var(--blue-light);"></span>Scolaire &amp; parascolaire, prise de commandes</p>
+          <p><span class="savoir-dot" style="background: var(--coral);"></span>Commandes en ligne via <a href={placeDesLibraires} target="_blank" rel="noopener">Place des Libraires</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal="up" data-delay="140" class="map-frame">
+      <div id="map-escalire" data-lat={data.adresse.lat} data-lng={data.adresse.lng} data-base={base}></div>
+      <p class="map-caption">au centre commercial Espace 61 — parking gratuit devant la porte</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .infos {
+    background: linear-gradient(180deg, #f4eee3, #efe7d8);
+    padding: 120px 28px;
+  }
+  .inf-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .inf-feather {
+    position: absolute;
+    right: 4%;
+    top: 70px;
+    width: min(260px, 24vw);
+    aspect-ratio: 636 / 1220;
+    background: var(--navy);
+    opacity: 0.08;
+    transform: rotate(28deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .inf-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+  .inf-heading {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .kicker {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 26px;
+    color: var(--navy);
+  }
+  h2 {
+    margin: 6px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .brush-underline {
+    width: 190px;
+    height: 20px;
+    margin: 16px auto 0;
+    background: var(--navy);
+    opacity: 0.9;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .inf-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    margin-top: 64px;
+    align-items: stretch;
+  }
+  .card {
+    background: var(--paper-card);
+    border-radius: 10px;
+    padding: 34px 32px;
+    box-shadow: 0 18px 40px rgba(24, 30, 50, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .card-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 27px;
+    color: var(--ink);
+  }
+  .card-text {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .card-contact {
+    line-height: 1.7;
+  }
+  .card-contact a {
+    color: var(--navy);
+    text-decoration: none;
+  }
+  .card-contact a:hover {
+    color: var(--red);
+  }
+  .card-email {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .pill-dark {
+    margin-top: auto;
+    align-self: flex-start;
+    font-family: var(--font-body);
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 11px 22px;
+    border-radius: 999px;
+    transition: background 0.3s ease;
+  }
+  .pill-dark:hover {
+    background: var(--navy);
+  }
+
+  .horaires {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 18px;
+    color: var(--text-2);
+  }
+  .horaires-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 8px;
+  }
+  .horaires-row:not(:last-child) {
+    border-bottom: 1px dotted rgba(24, 26, 32, 0.25);
+  }
+  .horaires-row span:last-child {
+    text-align: right;
+  }
+  .horaires-row.closed {
+    color: #8a8d96; /* no matching token; exact mockup value (line 1549) */
+  }
+  .horaires-row.today {
+    color: var(--red-ink);
+    font-weight: 500;
+  }
+  .card-note {
+    margin: auto 0 0;
+    font-family: var(--font-hand);
+    font-size: 21px;
+    color: var(--red-ink);
+  }
+
+  .savoir {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+  .savoir p {
+    margin: 0;
+    display: flex;
+    gap: 10px;
+  }
+  .savoir-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  .map-frame {
+    margin-top: 32px;
+    background: var(--paper-card);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 18px 40px rgba(24, 30, 50, 0.1);
+  }
+  #map-escalire {
+    width: 100%;
+    height: 380px;
+    border-radius: 6px;
+    background: #dcebf5; /* no matching token; exact mockup value (line 1570) */
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .map-caption {
+    margin: 12px 8px 4px;
+    font-family: var(--font-hand);
+    font-size: 21px;
+    color: var(--navy);
+  }
+
+  @media (max-width: 720px) {
+    .infos { padding: 72px 20px; }
+    .card { padding: 26px 22px; }
+    #map-escalire { height: 280px; }
+  }
+</style>

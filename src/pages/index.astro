@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import TornEdge from '../components/TornEdge.astro';
+import Librairie from '../components/Librairie.astro';
+import CoupsDeCoeur from '../components/CoupsDeCoeur.astro';
+import Rencontres from '../components/Rencontres.astro';
+import Equipe from '../components/Equipe.astro';
+import Infos from '../components/Infos.astro';
+---
+<Base
+  title="Librairie Escalire — librairie indépendante à Escalquens"
+  description="Librairie indépendante à Escalquens (Espace 61) : conseils de libraires, commandes dans la journée, rencontres d'auteurs et dédicaces."
+>
+  <Hero />
+  <main>
+    <TornEdge color="var(--paper)" />
+    <Librairie />
+    <CoupsDeCoeur />
+    <TornEdge color="var(--night)" />
+    <Rencontres />
+    <TornEdge color="var(--paper)" />
+    <Equipe />
+    <Infos />
+  </main>
+</Base>

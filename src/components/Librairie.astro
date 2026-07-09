@@ -1,0 +1,235 @@
+---
+import { getEntry } from 'astro:content';
+
+const textes = await getEntry('textes', 'textes');
+const titre = textes?.data.librairieTitre ?? '';
+const p1 = textes?.data.librairieP1 ?? '';
+const p2 = textes?.data.librairieP2 ?? '';
+const rayons = textes?.data.rayons ?? [];
+
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const inkSplat = `${base}assets/ink-splat.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+
+// Chip dot colors are positional (mockup line 1398-1407), not stored per-rayon
+// in the textes collection. Colors cycle if the CMS list grows past 10.
+const chipColors = [
+  'var(--red)',
+  'var(--coral)',
+  'var(--navy)',
+  'var(--blue)',
+  'var(--blue-light)',
+  '#23252b', // no matching token; exact mockup value (line 1403)
+  'var(--red)',
+  'var(--navy)',
+  'var(--blue)',
+  'var(--coral)',
+];
+---
+<section id="librairie" class="section librairie" aria-labelledby="librairie-heading">
+  <div aria-hidden="true" class="librairie-bg">
+    <div
+      class="librairie-feather"
+      data-parallax="0.12"
+      data-rot="26"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+    <div class="librairie-splat" style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}></div>
+  </div>
+
+  <div class="librairie-grid">
+    <div>
+      <p data-reveal="up" class="kicker">la librairie</p>
+      <h2 id="librairie-heading" data-reveal="ink-text" data-delay="80">{titre}</h2>
+      <div
+        data-reveal="ink"
+        data-delay="220"
+        class="brush-underline"
+        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+      ></div>
+      <p data-reveal="up" data-delay="140" class="body-text">{p1}</p>
+      <p data-reveal="up" data-delay="200" class="body-text">{p2}</p>
+      <div data-reveal="up" data-delay="260" class="chips">
+        {rayons.map((rayon, i) => (
+          <span class="chip">
+            <span class="chip-dot" style={`background:${chipColors[i % chipColors.length]}`}></span>
+            {rayon}
+          </span>
+        ))}
+      </div>
+    </div>
+    <div class="polaroids">
+      <div data-reveal="up" data-delay="120" class="polaroid polaroid--devanture">
+        <img
+          src={`${base}assets/photo-devanture.png`}
+          alt="Devanture de la librairie Escalire"
+          loading="lazy"
+        />
+        <p class="polaroid-caption">Centre commercial Espace 61, Escalquens</p>
+      </div>
+      <div data-reveal="up" data-delay="240" class="polaroid polaroid--interieur">
+        <img
+          src={`${base}assets/photo-interieur.png`}
+          alt="Intérieur de la librairie, entre les rayons"
+          loading="lazy"
+        />
+        <p class="polaroid-caption">Entre les rayons…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .librairie {
+    background: var(--paper);
+    padding: 120px 28px 110px;
+  }
+  .librairie-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .librairie-feather {
+    position: absolute;
+    right: 1%;
+    top: 60px;
+    width: min(280px, 28vw);
+    aspect-ratio: 636 / 1220;
+    background: var(--blue-light);
+    opacity: 0.16;
+    transform: rotate(26deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .librairie-splat {
+    position: absolute;
+    left: -140px;
+    bottom: -100px;
+    width: 480px;
+    aspect-ratio: 1;
+    background: var(--navy);
+    opacity: 0.06;
+    transform: rotate(-18deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .librairie-grid {
+    position: relative;
+    z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 64px;
+    align-items: center;
+  }
+
+  .kicker {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 26px;
+    color: var(--red-ink);
+  }
+  h2 {
+    margin: 6px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .brush-underline {
+    width: 220px;
+    height: 22px;
+    margin-top: 16px;
+    background: var(--red);
+    opacity: 0.9;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .body-text {
+    margin: 26px 0 0;
+    font-family: var(--font-body);
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+  .body-text + .body-text {
+    margin-top: 14px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 30px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 7px 15px;
+    border: 1px solid rgba(24, 26, 32, 0.16);
+    border-radius: 999px;
+    background: var(--paper-card);
+  }
+  .chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .polaroids {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    align-items: center;
+  }
+  .polaroid {
+    background: var(--paper-card);
+    padding: 14px 14px 18px;
+    border-radius: 6px;
+    box-shadow: 0 22px 44px rgba(24, 30, 50, 0.14);
+    width: min(440px, 100%);
+  }
+  .polaroid img {
+    width: 100%;
+    height: 280px;
+    display: block;
+    object-fit: cover;
+    border-radius: 3px;
+  }
+  .polaroid--devanture {
+    transform: rotate(-1.6deg);
+  }
+  .polaroid--interieur {
+    transform: rotate(1.8deg);
+    width: min(440px, calc(100% - 40px));
+    align-self: flex-end;
+  }
+  .polaroid-caption {
+    margin: 12px 4px 0;
+    font-family: var(--font-hand);
+    font-size: 21px;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 720px) {
+    .librairie { padding: 72px 20px; }
+    .polaroid--devanture { transform: rotate(-0.8deg); }
+    .polaroid--interieur { transform: rotate(0.8deg); }
+  }
+</style>

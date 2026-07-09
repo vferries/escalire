@@ -1,0 +1,54 @@
+---
+import { getEntry } from 'astro:content';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import cormorant600 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const infos = await getEntry('infos', 'infos');
+const annonce = infos?.data.annonce ?? '';
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
+    <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
+    <script is:inline>
+      document.documentElement.dataset.intensite = matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'discret'
+        : 'immersif';
+    </script>
+  </head>
+  <body>
+    <Nav />
+    {annonce && <p class="annonce" role="status">{annonce}</p>}
+    <slot />
+    <Footer />
+    <script src="../scripts/site.js"></script>
+  </body>
+</html>
+<style>
+  .annonce {
+    margin: 0;
+    margin-top: 63px; /* clears fixed nav: 12px+12px padding + 38px logo + 1px border */
+    padding: 10px 20px;
+    background: var(--navy);
+    color: var(--paper);
+    font-family: var(--font-hand);
+    font-size: 20px;
+    text-align: center;
+  }
+</style>

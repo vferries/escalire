@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
+
+const base = import.meta.env.BASE_URL;
+
+// CoupsDeCoeur.astro and Equipe.astro render nothing when their collection
+// has zero visible entries; keep those nav links out of sync-safe zero-state.
+const hasCoupsDeCoeur = selectCoupsDeCoeur(await getCollection('coupsDeCoeur')).length > 0;
+const hasEquipe = selectCoupsDeCoeur(await getCollection('equipe'), Infinity).length > 0;
+
+const allLinks: [string, string, boolean][] = [
+  ['#librairie', 'La librairie', true],
+  ['#coups-de-coeur', 'Coups de cœur', hasCoupsDeCoeur],
+  ['#evenements', 'Rencontres', true],
+  ['#equipe', "L'équipe", hasEquipe],
+  ['#infos', 'Horaires & accès', true],
+];
+const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string, string] => [href, label]);
+---
+<div id="progress-bar" aria-hidden="true"></div>
+<nav id="site-nav" aria-label="Navigation principale">
+  <a href="#accueil" class="nav-logo">
+    <img src={`${base}assets/logo-escalire.png`} alt="Librairie Escalire" width="77" height="38" />
+  </a>
+  <div class="nav-links">
+    {links.map(([href, label], i) => (
+      <a href={href} class={i === links.length - 1 ? 'nav-cta' : undefined}>{label}</a>
+    ))}
+  </div>
+</nav>
+<style>
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 40;
+    background: linear-gradient(90deg, var(--red), var(--navy) 60%, var(--blue-light));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  #site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 12px 28px;
+    background: rgba(250, 246, 239, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(24, 26, 32, 0.07);
+    transition: box-shadow 0.4s ease;
+  }
+  #site-nav.scrolled { box-shadow: 0 8px 26px rgba(24, 30, 50, 0.1); }
+
+  .nav-logo { display: flex; align-items: center; }
+  .nav-logo img { height: 38px; display: block; width: auto; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    font-family: var(--font-body);
+    font-size: 16px;
+    letter-spacing: 0.04em;
+  }
+  .nav-links a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links a:hover { color: var(--red); }
+  .nav-links a.nav-cta {
+    color: var(--paper);
+    background: var(--ink);
+    padding: 8px 18px;
+    border-radius: 999px;
+    transition: background 0.3s ease;
+  }
+  .nav-links a.nav-cta:hover { color: var(--paper); background: var(--navy); }
+
+  @media (max-width: 720px) {
+    /* Keep the logo, turn the link row into a horizontally scrollable strip
+       instead of a hamburger — preserves the one-page anchor UX. */
+    #site-nav { padding: 12px 16px; gap: 14px; }
+    .nav-links {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      min-width: 0;
+      gap: 18px;
+      /* edge fade hints there's more to scroll */
+      mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { white-space: nowrap; }
+  }
+</style>

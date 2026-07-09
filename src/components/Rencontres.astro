@@ -1,0 +1,334 @@
+---
+// Dark "Rencontres & dédicaces" section. Right column shows the next
+// upcoming published event (partitionEvents decides "upcoming" against the
+// build date) or a placeholder polaroid when none is scheduled.
+import { getCollection, getEntry } from 'astro:content';
+import { partitionEvents } from '../lib/events';
+import { formatEventDate } from '../lib/eventDate';
+
+const all = await getCollection('evenements');
+const infos = await getEntry('infos', 'infos');
+const { upcoming } = partitionEvents(all, new Date());
+const next = upcoming[0];
+
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const inkSplat = `${base}assets/ink-splat.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+
+const instagram = infos?.data.instagram ?? '';
+const facebook = infos?.data.facebook ?? '';
+
+const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}` : undefined;
+---
+<section id="evenements" class="section evenements" aria-labelledby="evenements-heading">
+  <div aria-hidden="true" class="eve-bg">
+    <div class="eve-glow eve-glow--navy"></div>
+    <div class="eve-glow eve-glow--red"></div>
+    <div
+      class="eve-feather eve-feather--a"
+      data-parallax="0.1"
+      data-rot="16"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+    <div
+      class="eve-feather eve-feather--b"
+      data-parallax="0.16"
+      data-rot="-28"
+      style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+    ></div>
+    <div class="eve-splat" style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}></div>
+    <div id="events-feathers" class="eve-feathers" aria-hidden="true" data-base={base}></div>
+  </div>
+
+  <div class="eve-grid">
+    <div>
+      <p data-reveal="up" class="kicker">rencontres &amp; dédicaces</p>
+      <h2 id="evenements-heading" data-reveal="ink-text" data-delay="80">La librairie reçoit celles et ceux qui écrivent</h2>
+      <div
+        data-reveal="ink"
+        data-delay="220"
+        class="brush-underline"
+        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+      ></div>
+      <p data-reveal="up" data-delay="140" class="intro">
+        Tout au long de l'année, Escalire organise des rencontres d'auteurs, des dédicaces et des lectures. Des moments
+        simples, autour d'une table et de quelques piles de livres.
+      </p>
+      <div class="bullets">
+        <div data-reveal="up" data-delay="200" class="bullet">
+          <span class="bullet-dot" style="background: var(--red);"></span>
+          <p><span class="bullet-lead">Rencontres d'auteurs</span> — échanges et discussions en librairie</p>
+        </div>
+        <div data-reveal="up" data-delay="280" class="bullet">
+          <span class="bullet-dot" style="background: var(--blue-light);"></span>
+          <p><span class="bullet-lead">Dédicaces</span> — repartez avec un mot rien que pour vous</p>
+        </div>
+        <div data-reveal="up" data-delay="360" class="bullet">
+          <span class="bullet-dot" style="background: var(--coral);"></span>
+          <p><span class="bullet-lead">Lectures &amp; jeunesse</span> — pour les petites et grandes oreilles</p>
+        </div>
+      </div>
+      <div data-reveal="up" data-delay="420" class="eve-cta">
+        <a href={instagram} target="_blank" rel="noopener" class="pill pill-fill">Les prochaines dates sur Instagram</a>
+        <a href={facebook} target="_blank" rel="noopener" class="pill pill-outline">Facebook</a>
+      </div>
+    </div>
+
+    <div data-reveal="up" data-delay="160" class="polaroid">
+      {next ? (
+        next.data.link ? (
+          <a href={next.data.link} target="_blank" rel="noopener" class="polaroid-link" aria-label={next.data.title}>
+            {affiche ? (
+              <img src={affiche} alt={next.data.title} loading="lazy" />
+            ) : (
+              <div class="polaroid-fallback" aria-hidden="true">
+                <strong>{next.data.title}</strong>
+              </div>
+            )}
+          </a>
+        ) : affiche ? (
+          <img src={affiche} alt={next.data.title} loading="lazy" />
+        ) : (
+          <div class="polaroid-fallback" aria-hidden="true">
+            <strong>{next.data.title}</strong>
+          </div>
+        )
+      ) : (
+        <div class="polaroid-fallback" aria-hidden="true">
+          <strong>Prochaine rencontre — affiche à venir</strong>
+        </div>
+      )}
+      <p class="polaroid-caption">
+        {next ? `${formatEventDate(next.data.date, true)} — ${next.data.title}` : 'Prochaine rencontre — affiche à venir'}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .evenements {
+    background: var(--night);
+    padding: 130px 28px;
+  }
+  .eve-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .eve-glow {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .eve-glow--navy {
+    top: -18%;
+    right: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(43, 63, 119, 0.35), rgba(43, 63, 119, 0) 65%);
+  }
+  .eve-glow--red {
+    bottom: -22%;
+    left: -12%;
+    width: 44vw;
+    height: 44vw;
+    background: radial-gradient(circle, rgba(232, 68, 46, 0.16), rgba(232, 68, 46, 0) 62%);
+  }
+  .eve-feather {
+    position: absolute;
+    aspect-ratio: 636 / 1220;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .eve-feather--a {
+    right: 3%;
+    top: 40px;
+    width: min(370px, 34vw);
+    background: var(--coral);
+    opacity: 0.13;
+    transform: rotate(16deg);
+  }
+  .eve-feather--b {
+    left: 3%;
+    bottom: 60px;
+    width: min(220px, 22vw);
+    background: var(--blue-light);
+    opacity: 0.11;
+    transform: rotate(-28deg) scaleX(-1);
+  }
+  .eve-splat {
+    position: absolute;
+    left: 26%;
+    top: -80px;
+    width: 440px;
+    aspect-ratio: 1;
+    background: var(--paper);
+    opacity: 0.07;
+    transform: rotate(40deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .eve-feathers {
+    position: absolute;
+    inset: 0;
+  }
+
+  .eve-grid {
+    position: relative;
+    z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 64px;
+    align-items: center;
+  }
+
+  .kicker {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 26px;
+    color: var(--coral);
+  }
+  h2 {
+    margin: 6px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 56px);
+    line-height: 1.1;
+    color: var(--paper);
+  }
+  .brush-underline {
+    width: 220px;
+    height: 22px;
+    margin-top: 16px;
+    background: var(--coral);
+    opacity: 0.95;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .intro {
+    margin: 26px 0 0;
+    font-family: var(--font-body);
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--text-on-dark);
+    text-wrap: pretty;
+  }
+
+  .bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 34px;
+  }
+  .bullet {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+  }
+  .bullet-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transform: translateY(-1px);
+  }
+  .bullet p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.5;
+    color: #e8e6df; /* no matching token; exact mockup value (line 1482) */
+  }
+  .bullet-lead {
+    font-weight: 600;
+  }
+
+  .eve-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 38px;
+  }
+  .pill {
+    font-family: var(--font-body);
+    font-size: 17px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 13px 26px;
+    border-radius: 999px;
+    transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+  .pill-fill {
+    color: var(--night);
+    background: var(--paper);
+  }
+  .pill-fill:hover {
+    background: var(--coral);
+    transform: translateY(-2px);
+  }
+  .pill-outline {
+    color: var(--paper);
+    border: 1.5px solid rgba(250, 246, 239, 0.5);
+  }
+  .pill-outline:hover {
+    border-color: var(--coral);
+    transform: translateY(-2px);
+  }
+
+  .polaroid {
+    justify-self: center;
+    background: var(--paper);
+    padding: 16px 16px 20px;
+    border-radius: 6px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+    transform: rotate(1.6deg);
+    width: min(400px, 100%);
+  }
+  .polaroid-link {
+    display: block;
+  }
+  .polaroid img {
+    width: 100%;
+    height: 490px;
+    display: block;
+    object-fit: cover;
+    border-radius: 3px;
+  }
+  .polaroid-fallback {
+    width: 100%;
+    height: 490px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    background: var(--navy);
+    border-radius: 3px;
+  }
+  .polaroid-fallback strong {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--paper);
+  }
+  .polaroid-caption {
+    margin: 14px 6px 0;
+    font-family: var(--font-hand);
+    font-size: 22px;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 720px) {
+    .evenements { padding: 72px 20px; }
+    .polaroid { transform: rotate(0.8deg); }
+  }
+</style>

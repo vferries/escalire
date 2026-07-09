@@ -1,0 +1,199 @@
+---
+import { getCollection } from 'astro:content';
+// selectCoupsDeCoeur's shape (visible + ordre) fits equipe members too;
+// reused instead of duplicating the same filter+sort. max=Infinity: no cap.
+import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
+
+const members = selectCoupsDeCoeur(await getCollection('equipe'), Infinity);
+
+const base = import.meta.env.BASE_URL;
+const featherMask = `${base}assets/feather-mask.png`;
+const inkSplat = `${base}assets/ink-splat.png`;
+const brushStroke = `${base}assets/brush-stroke.png`;
+---
+{members.length > 0 && (
+  <section id="equipe" class="section equipe" aria-labelledby="equipe-heading">
+    <div aria-hidden="true" class="eq-bg">
+      <div
+        class="eq-feather"
+        data-parallax="0.13"
+        data-rot="-22"
+        style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+      ></div>
+      <div
+        data-reveal="pop"
+        data-delay="300"
+        class="eq-splat"
+        style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
+      ></div>
+    </div>
+
+    <div class="eq-inner">
+      <p data-reveal="up" class="kicker">derrière le comptoir</p>
+      <h2 id="equipe-heading" data-reveal="ink-text" data-delay="80">L'équipe</h2>
+      <div
+        data-reveal="ink"
+        data-delay="220"
+        class="brush-underline"
+        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+      ></div>
+      <p data-reveal="up" data-delay="140" class="intro">
+        Des libraires qui lisent, débattent, et défendent leurs choix — chacun son rayon de prédilection, tous la
+        même envie de vous faire découvrir le bon livre.
+      </p>
+
+      <div class="eq-grid">
+        {members.map((member, i) => (
+          <div data-reveal="up" data-delay={100 + i * 120} class="eq-member">
+            {member.data.portrait ? (
+              <img
+                src={`${base}${member.data.portrait.replace(/^\//, '')}`}
+                alt={`Portrait de ${member.data.prenom}`}
+                loading="lazy"
+                class="eq-portrait"
+              />
+            ) : (
+              <div class="eq-portrait eq-portrait--placeholder" aria-hidden="true">
+                <div
+                  class="eq-portrait-feather"
+                  style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+                ></div>
+              </div>
+            )}
+            <p class="eq-caption">{member.data.prenom} — {member.data.rayon}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .equipe {
+    background: var(--paper);
+    padding: 120px 28px;
+  }
+  .eq-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .eq-feather {
+    position: absolute;
+    left: 5%;
+    top: 100px;
+    width: min(210px, 20vw);
+    aspect-ratio: 636 / 1220;
+    background: var(--red);
+    opacity: 0.09;
+    transform: rotate(-22deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .eq-splat {
+    position: absolute;
+    top: 90px;
+    right: 14%;
+    width: 96px;
+    aspect-ratio: 1;
+    background: var(--coral);
+    opacity: 0.7;
+    transform: rotate(20deg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .eq-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .kicker {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 26px;
+    color: var(--red-ink);
+  }
+  h2 {
+    margin: 6px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .brush-underline {
+    width: 160px;
+    height: 20px;
+    margin: 16px auto 0;
+    background: var(--red);
+    opacity: 0.9;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .intro {
+    margin: 26px auto 0;
+    max-width: 560px;
+    font-family: var(--font-body);
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .eq-grid {
+    display: flex;
+    justify-content: center;
+    gap: 56px;
+    flex-wrap: wrap;
+    margin-top: 60px;
+  }
+  .eq-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .eq-portrait {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    box-shadow: 0 16px 34px rgba(24, 30, 50, 0.16);
+    object-fit: cover;
+  }
+  .eq-portrait--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9f1f8;
+  }
+  .eq-portrait-feather {
+    width: 64px;
+    aspect-ratio: 636 / 1220;
+    background: var(--blue-light);
+    opacity: 0.8;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .eq-caption {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: 23px;
+    color: var(--navy);
+  }
+
+  @media (max-width: 720px) {
+    .equipe { padding: 72px 20px; }
+  }
+</style>
