@@ -1,9 +1,12 @@
 @import '@fontsource/eb-garamond/400.css';
 @import '@fontsource/eb-garamond/400-italic.css';
 @import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/eb-garamond/600.css';
 @import '@fontsource/cormorant-garamond/500.css';
 @import '@fontsource/cormorant-garamond/500-italic.css';
 @import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/600-italic.css';
+@import '@fontsource/cormorant-garamond/700.css';
 @import '@fontsource/caveat/500.css';
 @import '@fontsource/caveat/600.css';
 @import '@fontsource/caveat/700.css';
@@ -31,7 +34,9 @@
   --font-hand: 'Caveat', cursive;
 }
 
-html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
 body {
   margin: 0;
   background: var(--paper);
@@ -71,6 +76,14 @@ input:focus-visible {
 @keyframes featherSway { 0% { transform: translateX(-30px) rotate(-14deg); } 50% { transform: translateX(30px) rotate(10deg); } 100% { transform: translateX(-30px) rotate(-14deg); } }
 @keyframes cueBob { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(9px); opacity: 1; } }
 @keyframes inkDrift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(2.5%, 3.5%) scale(1.07); } }
+
+/* "discret" intensity: pause the infinite CSS animations (falling feathers
+   are JS-built and already skipped in rebuildFeathers() for this mode).
+   .hero-blob is the shared class of both inkDrift blobs (Hero.astro). */
+:root[data-intensite="discret"] .hero-blob,
+:root[data-intensite="discret"] .scroll-cue {
+  animation: none;
+}
 
 #map-escalire .leaflet-popup-content-wrapper,
 #map-escalire .leaflet-popup-tip { background: var(--paper-card); color: var(--text-2); font-family: var(--font-body); }

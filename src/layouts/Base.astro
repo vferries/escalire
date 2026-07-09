@@ -3,6 +3,7 @@ import { getEntry } from 'astro:content';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
+import cormorant600 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -24,6 +25,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
+    <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
     <script is:inline>
       (function () {
         var stored = null;
