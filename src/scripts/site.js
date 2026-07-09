@@ -196,6 +196,10 @@ function setupMap() {
     e.stopPropagation();
     btn.remove();
     initMap(el); // Leaflet is bundled; only the CARTO tile requests are deferred
+    // The consent button (previous focus target) is gone; move focus to the
+    // map container itself so keyboard users aren't dropped back to <body>.
+    el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
   }, { once: true });
 }
 
