@@ -42,7 +42,7 @@ collections:
     create: true
     slug: '{{fields.isbn13}}'
     identifier_field: titre
-    summary: '{{fields.titre}} ({{fields.libraire}})'
+    summary: '{{fields.titre}} — {{fields.isbn13}} ({{fields.libraire}})'
     sortable_fields: [ordre, titre]
     fields:
       - name: isbn13

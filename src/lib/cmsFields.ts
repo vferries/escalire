@@ -3,15 +3,15 @@ import { HORAIRE_REGEX } from './horaires';
 
 /**
  * Optional string field written by the CMS: a cleared field may come back as
- * '' or the key may be omitted entirely — both normalize to undefined so the
- * components' truthiness checks (d.titre, d.image…) keep working, while a
- * non-empty value is still validated by the wrapped schema.
+ * '', null (a bare YAML key with no value, e.g. `guest:`) or the key may be
+ * omitted entirely — all three normalize to undefined so the components'
+ * truthiness checks (d.titre, d.image…) keep working, while a non-empty
+ * value is still validated by the wrapped schema.
  */
 export function cmsOptional(schema: z.ZodString) {
   return z
-    .union([schema, z.literal(''), z.undefined()])
-    .transform((v) => (v ? v : undefined))
-    .optional();
+    .union([schema, z.literal(''), z.null(), z.undefined()])
+    .transform((v) => (v ? v : undefined));
 }
 
 export const cmsOptionalUrl = () => cmsOptional(z.string().url());

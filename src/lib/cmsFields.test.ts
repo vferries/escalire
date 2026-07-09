@@ -13,6 +13,9 @@ describe('cmsOptional', () => {
   it('accepts a missing key', () => {
     expect(schema.parse(undefined)).toBeUndefined();
   });
+  it('normalizes a bare YAML key (null) to undefined', () => {
+    expect(schema.parse(null)).toBeUndefined();
+  });
   it('still rejects invalid values', () => {
     expect(() => schema.parse('too long')).toThrow();
   });
@@ -21,6 +24,7 @@ describe('cmsOptional', () => {
 describe('cmsOptionalUrl', () => {
   it('normalizes a cleared field to undefined', () => {
     expect(cmsOptionalUrl().parse('')).toBeUndefined();
+    expect(cmsOptionalUrl().parse(null)).toBeUndefined();
   });
   it('still rejects a malformed URL', () => {
     expect(() => cmsOptionalUrl().parse('pas-une-url')).toThrow();

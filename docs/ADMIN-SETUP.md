@@ -95,6 +95,9 @@ npm test                             # garde-fous page + config
 
 Tester en local (§ 5) avant de pousser. En cas de régression Sveltia : la
 config est compatible Decap CMS (bascule possible en changeant le script).
+À noter : les clés `media_libraries`, `output` et `editor.preview` de
+`config.yml` sont propres à Sveltia — Decap les ignore (perte du plafond 5 Mo
+et de la conversion webp).
 
 ## 7. Récupération d'accès / incidents
 
