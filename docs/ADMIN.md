@@ -44,3 +44,10 @@ Interface simple, en français, utilisable sur tablette.
 - Un libraire ajoute un coup de cœur avec ISBN et le voit en ligne en < 5 min sans aide.
 - Aucune modification admin ne peut casser la mise en page (champs bornés, images recadrées).
 - Le site reste 100 % fonctionnel si l'admin est indisponible (contenu statique en cache).
+
+## Implémentation (2026-07, SP3)
+
+Admin en production : Sveltia CMS sur `/admin` (backend GitHub). Guide de
+l'équipe : `GUIDE-ADMIN.md`. Mise en service, accès et exploitation :
+`ADMIN-SETUP.md`. Écart assumé vs § Utilisateurs : auth par comptes GitHub,
+pas de magic link (spec S4).

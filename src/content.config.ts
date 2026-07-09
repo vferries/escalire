@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
-import { HORAIRE_REGEX } from './lib/horaires';
+import { cmsOptional, cmsOptionalUrl, horaireSlot } from './lib/cmsFields';
 
 const evenements = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/evenements' }),
@@ -8,9 +8,9 @@ const evenements = defineCollection({
     title: z.string().min(1).max(120),
     date: z.coerce.date(),
     type: z.enum(['soiree', 'rencontre', 'dedicace', 'lecture', 'atelier', 'autre']),
-    guest: z.string().max(80).optional(),
-    image: z.string().optional(),
-    link: z.string().url().optional(),
+    guest: cmsOptional(z.string().max(80)),
+    image: cmsOptional(z.string()),
+    link: cmsOptionalUrl(),
     published: z.boolean().default(false),
   }),
 });
@@ -24,10 +24,10 @@ const coupsDeCoeur = defineCollection({
     visible: z.boolean().default(true),
     ordre: z.number().int().default(0),
     // filled by the SP4 enrichment bot; hand-entered values always win
-    titre: z.string().max(120).optional(),
-    auteur: z.string().max(80).optional(),
-    editeur: z.string().max(60).optional(),
-    couverture: z.string().optional(),
+    titre: cmsOptional(z.string().max(120)),
+    auteur: cmsOptional(z.string().max(80)),
+    editeur: cmsOptional(z.string().max(60)),
+    couverture: cmsOptional(z.string()),
   }),
 });
 
@@ -35,21 +35,21 @@ const equipe = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/equipe' }),
   schema: z.object({
     prenom: z.string().min(1).max(40),
-    portrait: z.string().optional(),
+    portrait: cmsOptional(z.string()),
     rayon: z.string().min(1).max(60),
     visible: z.boolean().default(true),
     ordre: z.number().int().default(0),
   }),
 });
 
-const horaireSlot = z
-  .string()
-  .regex(HORAIRE_REGEX, 'Format attendu : « 10h00 – 12h30 » (tiret demi-cadratin)')
-  .nullable();
 const jour = z.object({ matin: horaireSlot, apresMidi: horaireSlot });
 
+// Plain-object JSON (editable as a CMS file collection); the parser restores
+// the single-entry array shape Astro's file loader expects.
+const singleEntry = (id: string) => (text: string) => [{ id, ...JSON.parse(text) }];
+
 const infos = defineCollection({
-  loader: file('./src/content/infos.json'),
+  loader: file('./src/content/infos.json', { parser: singleEntry('infos') }),
   schema: z.object({
     horaires: z.object({
       lundi: jour, mardi: jour, mercredi: jour, jeudi: jour,
@@ -70,7 +70,7 @@ const infos = defineCollection({
 });
 
 const textes = defineCollection({
-  loader: file('./src/content/textes.json'),
+  loader: file('./src/content/textes.json', { parser: singleEntry('textes') }),
   schema: z.object({
     slogan: z.string().max(80),
     sousTitre: z.string().max(120),

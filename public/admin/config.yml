@@ -1,0 +1,365 @@
+# Sveltia CMS configuration — Escalire admin (SP3).
+# Decap-compatible on purpose (spec § 8 fallback). Field lists are locked to
+# src/content.config.ts by src/lib/admin.test.ts — update both together.
+
+backend:
+  name: github
+  repo: vferries/escalire
+  branch: main
+  # sveltia-cms-auth Cloudflare Worker (docs/ADMIN-SETUP.md § 2)
+  base_url: https://sveltia-cms-auth.vincent-ferries.workers.dev
+
+site_url: https://vferries.github.io/escalire/
+display_url: https://vferries.github.io/escalire/
+
+media_folder: public/uploads
+public_folder: /uploads
+
+media_libraries:
+  default:
+    config:
+      max_file_size: 5242880 # 5 Mo
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 1600
+          height: 1600
+
+output:
+  omit_empty_optional_fields: true
+
+editor:
+  preview: false
+
+collections:
+  - name: coups-de-coeur
+    label: Coups de cœur
+    label_singular: Coup de cœur
+    folder: src/content/coups-de-coeur
+    create: true
+    slug: '{{fields.isbn13}}'
+    identifier_field: titre
+    summary: '{{fields.titre}} — {{fields.isbn13}} ({{fields.libraire}})'
+    sortable_fields: [ordre, titre]
+    fields:
+      - name: isbn13
+        label: ISBN (13 chiffres)
+        widget: string
+        pattern: ['^\d{13}$', '13 chiffres, sans espaces ni tirets (ex. 9782374912684)']
+        hint: Au dos du livre, sous le code-barres. La couverture est récupérée automatiquement.
+      - name: citation
+        label: Citation du libraire
+        widget: text
+        maxlength: 200
+        hint: 1 à 2 phrases, 200 caractères maximum.
+      - name: libraire
+        label: Prénom du libraire
+        widget: string
+        maxlength: 40
+      - name: visible
+        label: Visible sur le site
+        widget: boolean
+        default: true
+        hint: Le site affiche au plus 6 coups de cœur, dans l'ordre ci-dessous.
+      - name: ordre
+        label: Ordre d'affichage
+        widget: number
+        value_type: int
+        default: 0
+        hint: Du plus petit au plus grand.
+      - name: titre
+        label: Titre du livre
+        widget: string
+        required: false
+        maxlength: 120
+        hint: À remplir pour l'instant (le remplissage automatique depuis l'ISBN arrive plus tard).
+      - name: auteur
+        label: Auteur / autrice
+        widget: string
+        required: false
+        maxlength: 80
+      - name: editeur
+        label: Éditeur
+        widget: string
+        required: false
+        maxlength: 60
+      - name: couverture
+        label: Couverture (secours)
+        widget: image
+        required: false
+        hint: Uniquement si la couverture automatique ne s'affiche pas.
+
+  - name: evenements
+    label: Rencontres & événements
+    label_singular: Événement
+    folder: src/content/evenements
+    create: true
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    identifier_field: title
+    summary: '{{fields.title}}'
+    sortable_fields: [date, title]
+    fields:
+      - name: title
+        label: Titre
+        widget: string
+        maxlength: 120
+        hint: 'Ex. : « Rencontre avec Rouda – Les Jardins perdus ».'
+      - name: date
+        label: Date et heure
+        widget: datetime
+        format: 'YYYY-MM-DDTHH:mm:ss'
+        hint: Les événements passés sont archivés automatiquement chaque nuit.
+      - name: type
+        label: Type
+        widget: select
+        default: rencontre
+        options:
+          - { value: rencontre, label: Rencontre }
+          - { value: dedicace, label: Dédicace }
+          - { value: lecture, label: Lecture }
+          - { value: atelier, label: Atelier }
+          - { value: soiree, label: Soirée }
+          - { value: autre, label: Autre }
+      - name: guest
+        label: Invité·e
+        widget: string
+        required: false
+        maxlength: 80
+      - name: image
+        label: Affiche
+        widget: image
+        required: false
+      - name: link
+        label: Lien externe
+        widget: string
+        type: url
+        required: false
+        hint: Billetterie, publication Instagram…
+      - name: published
+        label: Visible sur le site
+        widget: boolean
+        default: false
+      - name: body
+        label: Description
+        widget: markdown
+        required: false
+
+  - name: equipe
+    label: Équipe
+    label_singular: Libraire
+    folder: src/content/equipe
+    create: true
+    slug: '{{fields.prenom}}'
+    identifier_field: prenom
+    summary: '{{fields.prenom}} — {{fields.rayon}}'
+    sortable_fields: [ordre, prenom]
+    fields:
+      - name: prenom
+        label: Prénom
+        widget: string
+        maxlength: 40
+      - name: portrait
+        label: Portrait
+        widget: image
+        required: false
+        hint: Photo carrée de préférence — elle est affichée en rond.
+      - name: rayon
+        label: Rayon favori
+        widget: string
+        maxlength: 60
+      - name: visible
+        label: Visible sur le site
+        widget: boolean
+        default: true
+      - name: ordre
+        label: Ordre d'affichage
+        widget: number
+        value_type: int
+        default: 0
+
+  - name: infos
+    label: Horaires & infos pratiques
+    files:
+      - name: infos
+        label: Horaires & infos pratiques
+        file: src/content/infos.json
+        fields:
+          - name: horaires
+            label: Horaires d'ouverture
+            widget: object
+            hint: 'Format : « 10h00 – 12h30 » (tiret demi-cadratin –). Laisser vide si fermé.'
+            fields:
+              - name: lundi
+                label: Lundi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: mardi
+                label: Mardi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: mercredi
+                label: Mercredi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: jeudi
+                label: Jeudi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: vendredi
+                label: Vendredi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: samedi
+                label: Samedi
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+              - name: dimanche
+                label: Dimanche
+                widget: object
+                fields:
+                  - name: matin
+                    label: Matin
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                  - name: apresMidi
+                    label: Après-midi
+                    widget: string
+                    required: false
+                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+          - name: annonce
+            label: Annonce exceptionnelle
+            widget: string
+            required: false
+            maxlength: 160
+            hint: 'Affichée en bandeau sur le site si non vide. Ex. : « Fermé le 15 août ».'
+          - name: telephone
+            label: Téléphone
+            widget: string
+          - name: email
+            label: Email
+            widget: string
+            type: email
+          - name: adresse
+            label: Adresse (ne pas modifier sans raison)
+            widget: object
+            collapsed: true
+            fields:
+              - name: lignes
+                label: Lignes d'adresse
+                widget: list
+                min: 1
+              - name: lat
+                label: Latitude
+                widget: number
+                value_type: float
+                step: 0.0001
+              - name: lng
+                label: Longitude
+                widget: number
+                value_type: float
+                step: 0.0001
+          - name: instagram
+            label: Instagram
+            widget: string
+            type: url
+          - name: facebook
+            label: Facebook
+            widget: string
+            type: url
+          - name: placeDesLibraires
+            label: Place des Libraires
+            widget: string
+            type: url
+
+  - name: textes
+    label: Textes du site
+    files:
+      - name: textes
+        label: Textes du site
+        file: src/content/textes.json
+        fields:
+          - name: slogan
+            label: Slogan (hero)
+            widget: string
+            maxlength: 80
+          - name: sousTitre
+            label: Sous-titre (hero)
+            widget: string
+            maxlength: 120
+          - name: librairieTitre
+            label: Titre de la section « La librairie »
+            widget: string
+            maxlength: 120
+          - name: librairieP1
+            label: Paragraphe 1
+            widget: text
+          - name: librairieP2
+            label: Paragraphe 2
+            widget: text
+          - name: rayons
+            label: Rayons (nuage de la section « La librairie »)
+            widget: list
+            min: 1

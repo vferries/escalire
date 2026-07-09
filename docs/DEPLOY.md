@@ -17,7 +17,7 @@
 - [x] Déclaration RGPD minimale : la carte charge des tuiles CARTO (IP transmise) — bandeau simple ou tuiles proxifiées ; pas d'analytics ou analytics sans cookie (Plausible)
 - [ ] Test Lighthouse mobile > 90 perf / 100 a11y sur la page
 - [ ] Vérifier l'affichage des couvertures epagine depuis le domaine de prod
-- [ ] Bascule escalire.fr : régénérer `robots.txt` (Disallow: /admin/) et `sitemap.xml` (URLs racine), ajuster `site`/`base` dans `astro.config`
+- [ ] Bascule escalire.fr : régénérer `robots.txt` (Disallow: /admin/) et `sitemap.xml` (URLs racine), ajuster `site`/`base` dans `astro.config`, mettre à jour `site_url`/`display_url` dans `public/admin/config.yml` et ajouter `escalire.fr` à `ALLOWED_DOMAINS` du Worker OAuth (cf. ADMIN-SETUP.md § 8)
 
 Décision SP2 (2026-07-09) : carte au clic — aucun appel aux tuiles CARTO sans action explicite ; bandeau non nécessaire.
 
