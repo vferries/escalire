@@ -57,7 +57,10 @@ const feather = `${base}assets/feather.png`;
         </div>
       </div>
 
-      <p data-reveal="fade" data-delay="200" class="closing-line">Envie de commander ? Retrouvez nos livres sur <a href={placeDesLibraires} target="_blank" rel="noopener">Place des Libraires</a> — commandes traitées dans la journée.</p>
+      <div data-reveal="up" data-delay="200" class="closing-cta">
+        <p class="closing-line">Envie de commander ? Commandes traitées dans la journée.</p>
+        <a href={placeDesLibraires} target="_blank" rel="noopener" class="pill pill-fill">Commander sur Place des Libraires</a>
+      </div>
     </div>
   </section>
 )}
@@ -194,19 +197,36 @@ const feather = `${base}assets/feather.png`;
     transform: rotate(-2deg);
   }
 
-  .closing-line {
+  .closing-cta {
     margin: 46px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .closing-line {
+    margin: 0;
     text-align: center;
     font-family: var(--font-body);
     font-size: 17px;
     color: #4a4e59; /* no matching token; exact mockup value (line 1458) */
   }
-  .closing-line a {
-    color: var(--navy);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  /* Same pill recipe as the hero primary CTA (Hero.astro .btn-primary). */
+  .pill {
+    font-family: var(--font-body);
+    font-size: 17px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 13px 26px;
+    border-radius: 999px;
+    transition: background 0.3s ease, transform 0.3s ease;
   }
-  .closing-line a:hover {
-    color: var(--red);
+  .pill-fill {
+    color: var(--paper);
+    background: var(--ink);
+  }
+  .pill-fill:hover {
+    background: var(--navy);
+    transform: translateY(-2px);
   }
 </style>
