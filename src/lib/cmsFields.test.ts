@@ -19,6 +19,12 @@ describe('cmsOptional', () => {
   it('still rejects invalid values', () => {
     expect(() => schema.parse('too long')).toThrow();
   });
+  // parse(undefined) is not enough: in zod v4 a missing OBJECT KEY only
+  // passes if the field schema is .optional() — this is what broke the
+  // CI build on legacy events without a `link` key.
+  it('makes the key optional inside an object schema', () => {
+    expect(z.object({ f: schema }).parse({})).toEqual({});
+  });
 });
 
 describe('cmsOptionalUrl', () => {
@@ -42,5 +48,8 @@ describe('horaireSlot', () => {
   });
   it('still rejects a malformed slot', () => {
     expect(() => horaireSlot.parse('10h - 12h30')).toThrow();
+  });
+  it('treats a missing key inside an object schema as « fermé »', () => {
+    expect(z.object({ matin: horaireSlot }).parse({})).toEqual({ matin: null });
   });
 });
