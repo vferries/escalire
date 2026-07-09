@@ -34,6 +34,13 @@
   --font-hand: 'Caveat', cursive;
 }
 
+/* box-sizing only, ported from the mockup wrapper reset (design/escalire.html
+   line 7: `* { margin: 0; padding: 0; box-sizing: border-box; }`). Margin/padding
+   zeroing intentionally NOT ported: components already set explicit margins. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
