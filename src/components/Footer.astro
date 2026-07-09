@@ -28,12 +28,6 @@ const year = new Date().getFullYear();
       <a href="https://escalire.fr/MentionsLegales.html" target="_blank" rel="noopener">Mentions légales</a>
     </div>
     <p class="footer-copyright">© {year} Librairie Escalire — {telephone} — {email}</p>
-    <fieldset class="anim-setting">
-      <legend>Animations</legend>
-      <label><input type="radio" name="intensite" value="immersif" checked /> immersif</label>
-      <label><input type="radio" name="intensite" value="equilibre" /> équilibré</label>
-      <label><input type="radio" name="intensite" value="discret" /> discret</label>
-    </fieldset>
   </div>
 </footer>
 <style>
@@ -89,26 +83,5 @@ const year = new Date().getFullYear();
     font-family: var(--font-body);
     font-size: 14px;
     color: #4a5468; /* no matching token; exact mockup value (line 1588) */
-  }
-
-  .anim-setting {
-    border: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-    font-family: var(--font-hand);
-    font-size: 18px;
-    color: var(--text-2);
-  }
-  .anim-setting legend { padding: 0 8px 0 0; }
-  .anim-setting label {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
   }
 </style>

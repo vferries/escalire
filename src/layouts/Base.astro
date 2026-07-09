@@ -27,18 +27,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
     <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
     <script is:inline>
-      (function () {
-        var stored = null;
-        try {
-          stored = localStorage.getItem('escalire-animations');
-        } catch (e) {
-          console.warn('escalire: localStorage unavailable', e);
-        }
-        if (!['immersif', 'equilibre', 'discret'].includes(stored)) stored = null;
-        var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        document.documentElement.dataset.intensite =
-          stored || (reduced ? 'discret' : 'immersif');
-      })();
+      document.documentElement.dataset.intensite = matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'discret'
+        : 'immersif';
     </script>
   </head>
   <body>

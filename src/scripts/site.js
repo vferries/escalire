@@ -1,15 +1,14 @@
 // Client behaviors: progress bar, nav shadow, parallax, hero entrance, scroll
-// reveals, lazy Leaflet map, current-day highlight, animation intensity setting.
+// reveals, lazy Leaflet map, current-day highlight, feather field.
 //
-// Ported from design/escalire-source.html (lines 1647-1770), adapted so the
-// "intensite" setting is a client-persisted choice instead of a build-time
-// prop. See .superpowers/sdd/task-10-brief.md for the constants table.
+// Ported from design/escalire-source.html (lines 1647-1770). "intensite" is
+// now derived only from prefers-reduced-motion (immersif|discret), no user
+// setting: see .superpowers/sdd/task-10-brief.md for the constants table.
 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const STORAGE_KEY = 'escalire-animations';
-const INTENSITES = { immersif: 1, equilibre: 0.5, discret: 0 };
+const INTENSITES = { immersif: 1, discret: 0 };
 const amp = () => INTENSITES[document.documentElement.dataset.intensite] ?? 1;
 
 const EASE = 'cubic-bezier(.22,.61,.21,1)';
@@ -219,7 +218,11 @@ function highlightToday() {
 // - gust accumulation (scroll handler): lines 1647-1651
 // - gust decay loop: lines 1695-1707
 // - 3-wrapper DOM (outer/fall/sway/tinted-mask): lines 1785-1815
-// - soft opacity factor: line 1783
+//
+// Vincent's decision: fixed look, no user-facing intensity control. Feathers
+// are "many + slightly transparent" — full immersif counts, permanent 0.6
+// opacity factor applied on top of each seed's own opacity (.55-.95 -> .33-.57).
+const FEATHER_OPACITY_FACTOR = 0.6;
 
 const HERO_PALETTE = ['#e8442e', '#f08a67', '#2b3f77', '#4a76b8', '#6aa7cc', '#23252b'];
 const EVENTS_PALETTE = ['#f08a67', '#6aa7cc', '#c9dfed', '#e8442e', '#4a76b8', '#faf6ef'];
@@ -320,11 +323,11 @@ function buildFeather(seed, maskUrl) {
   return outer;
 }
 
-function fillLayer(container, seeds, count, soft) {
+function fillLayer(container, seeds, count) {
   const maskUrl = featherMaskUrl(container);
   const shown = seeds.slice(0, count);
   const built = shown.map((seed) => {
-    const outer = buildFeather({ ...seed, opacity: seed.o * soft }, maskUrl);
+    const outer = buildFeather({ ...seed, opacity: seed.o * FEATHER_OPACITY_FACTOR }, maskUrl);
     container.appendChild(outer);
     return { el: outer, depth: seed.depth };
   });
@@ -339,46 +342,19 @@ function rebuildFeathers() {
   if (heroContainer) heroContainer.replaceChildren();
   if (eventsContainer) eventsContainer.replaceChildren();
 
-  const intensite = document.documentElement.dataset.intensite;
-  if (intensite === 'discret') return; // no feathers
+  if (document.documentElement.dataset.intensite === 'discret') return; // no feathers
 
-  const soft = intensite === 'equilibre' ? 0.6 : 1;
   const narrow = window.innerWidth <= 720; // fewer feathers on small screens: less clutter, lighter DOM
-  const factor = (intensite === 'equilibre' ? 0.5 : 1) * (narrow ? 0.5 : 1);
+  const factor = narrow ? 0.5 : 1;
   const heroCount = Math.round(heroSeeds.length * factor);
   const eventsCount = Math.round(eventSeeds.length * factor);
 
-  if (heroContainer) activeFeathers.push(...fillLayer(heroContainer, heroSeeds, heroCount, soft));
-  if (eventsContainer)
-    activeFeathers.push(...fillLayer(eventsContainer, eventSeeds, eventsCount, soft));
+  if (heroContainer) activeFeathers.push(...fillLayer(heroContainer, heroSeeds, heroCount));
+  if (eventsContainer) activeFeathers.push(...fillLayer(eventsContainer, eventSeeds, eventsCount));
 
   if (amp() > 0 && Math.abs(gust) >= 0.1 && gustRaf === null) {
     gustRaf = requestAnimationFrame(stepGust);
   }
-}
-
-// --- Intensity setting UI -----------------------------------------------------
-
-function setupIntensity(onScroll) {
-  const radios = document.querySelectorAll('input[name="intensite"]');
-  const current = document.documentElement.dataset.intensite;
-  radios.forEach((radio) => {
-    radio.checked = radio.value === current;
-  });
-
-  radios.forEach((radio) => {
-    radio.addEventListener('change', () => {
-      if (!radio.checked) return;
-      document.documentElement.dataset.intensite = radio.value;
-      onScroll();
-      rebuildFeathers();
-      try {
-        localStorage.setItem(STORAGE_KEY, radio.value);
-      } catch (e) {
-        console.warn('escalire: localStorage unavailable', e);
-      }
-    });
-  });
 }
 
 // --- Init ---------------------------------------------------------------------
@@ -389,4 +365,11 @@ setupReveals();
 setupMap();
 highlightToday();
 rebuildFeathers();
-setupIntensity(onScroll);
+
+// OS-level prefers-reduced-motion can change live (e.g. user toggles it in
+// system settings while the page is open): re-apply intensity + re-render.
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
+  document.documentElement.dataset.intensite = e.matches ? 'discret' : 'immersif';
+  onScroll();
+  rebuildFeathers();
+});
