@@ -68,7 +68,8 @@ const jsonLd = {
     <meta property="og:image" content={new URL(`${base}assets/logo-escalire.png`, Astro.site).href} />
     <meta property="og:locale" content="fr_FR" />
     <meta name="twitter:card" content="summary" />
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {/* escape < so CMS-edited strings can never close the script tag */}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\u003c')} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
     <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
