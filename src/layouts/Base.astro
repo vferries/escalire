@@ -13,7 +13,45 @@ const { title, description } = Astro.props;
 const infos = await getEntry('infos', 'infos');
 const annonce = infos?.data.annonce ?? '';
 const base = import.meta.env.BASE_URL;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const canonical = new URL(base, Astro.site).href;
+
+// JSON-LD BookStore: opening hours derived from infos.horaires (schema.org day names,
+// two specs per open day — morning and afternoon slot).
+const jourSchema: Record<string, string> = {
+  lundi: 'Monday', mardi: 'Tuesday', mercredi: 'Wednesday', jeudi: 'Thursday',
+  vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday',
+};
+const toHM = (s: string) => s.replace(/(\d{2})h(\d{2})/, '$1:$2');
+const openingHours = Object.entries(infos?.data.horaires ?? {}).flatMap(([jour, h]) =>
+  [h.matin, h.apresMidi].filter(Boolean).map((slot) => {
+    const [opens, closes] = (slot as string).split(' – ').map(toHM);
+    return {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: `https://schema.org/${jourSchema[jour]}`,
+      opens, closes,
+    };
+  })
+);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BookStore',
+  name: 'Librairie Escalire',
+  url: canonical,
+  image: new URL(`${base}assets/logo-escalire.png`, Astro.site).href,
+  telephone: infos?.data.telephone,
+  email: infos?.data.email,
+  address: {
+    '@type': 'PostalAddress',
+    // last line of adresse.lignes is fixed as "31750 Escalquens"
+    streetAddress: infos?.data.adresse.lignes.slice(0, -1).join(', '),
+    postalCode: '31750',
+    addressLocality: 'Escalquens',
+    addressCountry: 'FR',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: infos?.data.adresse.lat, longitude: infos?.data.adresse.lng },
+  openingHoursSpecification: openingHours,
+  sameAs: [infos?.data.instagram, infos?.data.facebook].filter(Boolean),
+};
 ---
 <!doctype html>
 <html lang="fr">
@@ -23,6 +61,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(`${base}assets/logo-escalire.png`, Astro.site).href} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} />
     <link rel="preload" as="font" type="font/woff2" href={cormorant600} crossorigin />
