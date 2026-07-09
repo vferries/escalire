@@ -6,9 +6,8 @@ backend:
   name: github
   repo: vferries/escalire
   branch: main
-  # sveltia-cms-auth Cloudflare Worker (docs/ADMIN-SETUP.md § 2) — placeholder
-  # until Task 6; login is impossible until this is the real Worker URL.
-  base_url: https://sveltia-cms-auth.A-COMPLETER.workers.dev
+  # sveltia-cms-auth Cloudflare Worker (docs/ADMIN-SETUP.md § 2)
+  base_url: https://sveltia-cms-auth.vincent-ferries.workers.dev
 
 site_url: https://vferries.github.io/escalire/
 display_url: https://vferries.github.io/escalire/

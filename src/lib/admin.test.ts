@@ -28,6 +28,7 @@ describe('admin config ⇆ content.config consistency', () => {
   it('targets the GitHub repo on main through an OAuth proxy', () => {
     expect(config.backend).toMatchObject({ name: 'github', repo: 'vferries/escalire', branch: 'main' });
     expect(config.backend.base_url).toMatch(/^https:\/\//);
+    expect(config.backend.base_url).not.toContain('A-COMPLETER');
   });
 
   it('stores uploads where the site serves them', () => {
