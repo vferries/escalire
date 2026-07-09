@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
+import { HORAIRE_REGEX } from './lib/horaires';
 
 const evenements = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/evenements' }),
@@ -41,7 +42,11 @@ const equipe = defineCollection({
   }),
 });
 
-const jour = z.object({ matin: z.string().nullable(), apresMidi: z.string().nullable() });
+const horaireSlot = z
+  .string()
+  .regex(HORAIRE_REGEX, 'Format attendu : « 10h00 – 12h30 » (tiret demi-cadratin)')
+  .nullable();
+const jour = z.object({ matin: horaireSlot, apresMidi: horaireSlot });
 
 const infos = defineCollection({
   loader: file('./src/content/infos.json'),

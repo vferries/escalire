@@ -1,5 +1,10 @@
 export type Jour = { matin: string | null; apresMidi: string | null };
 
+// Single source of truth for the hours format, used both in content.config.ts
+// (Zod validation) and in horaires.test.ts. Separator is space + en-dash
+// (U+2013) + space, matching the mockup and infos.json.
+export const HORAIRE_REGEX = /^\d{2}h\d{2} – \d{2}h\d{2}$/;
+
 export const JOURS = [
   'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche',
 ] as const;

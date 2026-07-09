@@ -22,6 +22,10 @@ const jourSchema: Record<string, string> = {
   vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday',
 };
 const toHM = (s: string) => s.replace(/(\d{2})h(\d{2})/, '$1:$2');
+// international format for JSON-LD; same normalization as the tel: link in Infos.astro
+const telephoneIntl = infos?.data.telephone
+  ? `+33${infos.data.telephone.replace(/\D/g, '').replace(/^0/, '')}`
+  : undefined;
 const openingHours = Object.entries(infos?.data.horaires ?? {}).flatMap(([jour, h]) =>
   [h.matin, h.apresMidi].filter(Boolean).map((slot) => {
     const [opens, closes] = (slot as string).split(' – ').map(toHM);
@@ -38,7 +42,7 @@ const jsonLd = {
   name: 'Librairie Escalire',
   url: canonical,
   image: new URL(`${base}assets/logo-escalire.png`, Astro.site).href,
-  telephone: infos?.data.telephone,
+  telephone: telephoneIntl,
   email: infos?.data.email,
   address: {
     '@type': 'PostalAddress',
