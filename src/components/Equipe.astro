@@ -53,11 +53,12 @@ const brushStroke = `${base}assets/brush-stroke.png`;
                 class="eq-portrait"
               />
             ) : (
-              <div
-                class="eq-portrait eq-portrait--placeholder"
-                aria-hidden="true"
-                style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
-              ></div>
+              <div class="eq-portrait eq-portrait--placeholder" aria-hidden="true">
+                <div
+                  class="eq-portrait-feather"
+                  style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
+                ></div>
+              </div>
             )}
             <p class="eq-caption">{member.data.prenom} — {member.data.rayon}</p>
           </div>
@@ -170,11 +171,18 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     object-fit: cover;
   }
   .eq-portrait--placeholder {
-    background: var(--sky);
-    -webkit-mask-size: 60% 60%;
-    mask-size: 60% 60%;
-    -webkit-mask-position: center;
-    mask-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9f1f8;
+  }
+  .eq-portrait-feather {
+    width: 64px;
+    aspect-ratio: 636 / 1220;
+    background: var(--blue-light);
+    opacity: 0.8;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
   }
