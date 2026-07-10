@@ -117,3 +117,40 @@ Changements vs le modèle « feuille morte » ci-dessus :
   plume à plat — rotateY réduit (4–10°) ; part de vrilles 22 % → 12 %.
 - Inchangé : dérive apériodique de la chute, easings (lent aux extrêmes, rapide au
   point bas), couplage période ∝ amplitude, variables CSS par plume, 4 wrappers.
+
+## v3 (2026-07-11) — simulation physique cuite en WAAPI
+
+Vincent : « On tente la v3 physique, on peut poser un tag sur la V2 et y revenir au
+besoin. » → tag `feathers-v2-pendulum` sur la v2.
+
+Principe : intégrer une fois au chargement, par plume, le modèle quasi-stationnaire
+de plaque en chute libre d'Andersen–Pesavento–Wang (JFM 2005) — régime *flutter* —
+puis échantillonner x(t), y(t), θ(t) et les cuire en une animation WAAPI
+(`element.animate`, `iterations: Infinity`). Coût unique de quelques ms au
+chargement ; ensuite tout tourne sur le compositeur, zéro rAF permanent (la
+convention du projet est respectée).
+
+- **Module pur `src/lib/feather-physics.js`** (sans DOM, testable unitairement) :
+  - `simulateFeather(params, rng)` — RK4 sur les équations en repère plaque
+    (vitesses u/v, angle θ, rotation ω) : couple de masse ajoutée −K·u·v,
+    circulation Γ = −Ct·u·v/V + Cr·ω (portance de translation + rotation), traînée
+    (A − B(u²−v²)/V²)·V, amortissement rotationnel (μ1 + μ2|ω|)·ω, gravité.
+    Coefficients de départ = valeurs ajustées du papier (Ct 1.2, Cr π, A 1.4, B 1,
+    μ 0.2), puis réglés à l'œil dans le régime flutter (θ borné, glisses
+    alternées, légère remontée au virage).
+  - `defaultParams(rng)` — paramètres par plume (inertie, poids, coefficients ±20 %,
+    conditions initiales) → largeur/période/caractère de glisse variés.
+  - `toLoopingKeyframes(samples, n)` — fenêtre stabilisée couvrant une descente
+    complète, normalisée : y → fraction 0..1 (remappée −24vh→124vh), x centré
+    (unités de demi-corde, mis à l'échelle px par site.js), θ en degrés.
+    Pas de raccord de boucle nécessaire : le wrap se fait hors écran (124vh→−24vh).
+- **site.js** : le wrapper `path` (WAAPI translate+rotate, durée 20.5–35.5 s ∝
+  taille, délai négatif aléatoire) remplace les wrappers `fall`+`sway` v2 — la
+  position et l'assiette sont UNE SEULE animation car c'est un seul mouvement
+  physique ; la pile reste outer (rafale JS + gust) / path / flutter (frémissement
+  3D CSS, vrilles ~12 %) / plume teintée à plat.
+- **CSS** : `@keyframes featherFall` / `featherSway` supprimés (morts) ;
+  `featherFlutter` / `featherTwirl` conservés.
+- Tests : comportementaux sur le module (descend, alterne ≥ 4 virages sans
+  culbuter, keyframes normalisées et déterministes à graine fixée) + golden checks
+  site.js/CSS mis à jour.

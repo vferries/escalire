@@ -36,35 +36,33 @@ describe('static map (spec SP5 I2)', () => {
   });
 });
 
-describe('natural feather motion (spec 2026-07-10)', () => {
+describe('natural feather motion (spec 2026-07-10, v3 physics)', () => {
   const css = () => read('src/styles/global.css');
   const js = () => read('src/scripts/site.js');
-  it('rocks like a pendulum: max tilt at the swing extremes, level mid-swing', () => {
-    expect(css()).toMatch(/featherSway[\s\S]*?0%\s*\{[^}]*rotate\(var\(--swayR\)\)/);
-    expect(css()).toMatch(/50%\s*\{[^}]*rotate\(calc\(var\(--swayR\) \* -1\)\)/);
-    expect(css()).toMatch(/25%\s*\{[^}]*rotate\(0deg\)/);
+  it('bakes the simulated trajectory into a WAAPI animation per feather', () => {
+    expect(js()).toContain("from '../lib/feather-physics.js'");
+    expect(js()).toContain('toLoopingKeyframes');
+    expect(js()).toMatch(/\.animate\(/);
+    expect(js()).toMatch(/iterations: Infinity/);
   });
-  it('descends along a pendulum arc: low point mid-swing, high at the extremes', () => {
-    expect(css()).toMatch(/25%\s*\{[^}]*translateY\(var\(--swayY\)\)/);
-    expect(css()).toMatch(/featherSway[\s\S]*?0%\s*\{[^}]*translateY\(0\)/);
+  it('drops the v2 CSS fall/sway keyframes (position+pitch live in the baked path)', () => {
+    expect(css()).not.toContain('@keyframes featherFall');
+    expect(css()).not.toContain('@keyframes featherSway');
+    expect(js()).not.toContain('featherFall');
+    expect(js()).not.toContain('featherSway');
   });
-  it('lays the feathers flat: base rotation near horizontal', () => {
-    expect(js()).toMatch(/rot: 74 \+ Math\.random\(\) \* 32/);
-  });
-  it('gives the fall an aperiodic horizontal drift', () => {
-    expect(css()).toMatch(/@keyframes featherFall[\s\S]*?var\(--driftX\)/);
-  });
-  it('ships the 3D flutter and twirl variants', () => {
+  it('keeps the 3D flutter and twirl variants', () => {
     expect(css()).toContain('@keyframes featherFlutter');
     expect(css()).toContain('@keyframes featherTwirl');
-  });
-  it('seeds per-feather variables and builds the flutter wrapper', () => {
-    expect(js()).toContain('--swayX');
     expect(js()).toContain('featherFlutter');
     expect(js()).toContain('featherTwirl');
   });
-  it('couples the sway period to the glide amplitude (long pendulum)', () => {
-    expect(js()).toMatch(/sway: 2\.6 \+ swayX \* 0\.055/);
+  it('lays the feathers flat and dampens the simulated pitch for the flat look', () => {
+    expect(js()).toMatch(/rot: 74 \+ Math\.random\(\) \* 32/);
+    expect(js()).toMatch(/thScale/);
+  });
+  it('keeps the physics off the critical path: first build deferred to idle', () => {
+    expect(js()).toMatch(/requestIdleCallback/);
   });
 });
 

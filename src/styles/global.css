@@ -79,33 +79,11 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
-/* Feather motion (falling-leaf model, spec 2026-07-10): amplitudes come from
-   per-feather CSS variables set on the outer wrapper by site.js — no fallbacks
-   on purpose, feathers are only ever built with every variable set. */
-
-/* Descent + slow horizontal meander. Y stays proportional to progress at each
-   stop (average fall speed unchanged); irregular stops + sway periods are
-   incommensurate, so the combined path never visibly repeats. */
-@keyframes featherFall {
-  0% { transform: translate(0, -24vh); animation-timing-function: cubic-bezier(.45, .15, .55, .85); }
-  22% { transform: translate(var(--driftX), 8.6vh); animation-timing-function: cubic-bezier(.45, .15, .55, .85); }
-  47% { transform: translate(calc(var(--driftX) * -0.55), 45.6vh); animation-timing-function: cubic-bezier(.45, .15, .55, .85); }
-  71% { transform: translate(calc(var(--driftX) * 0.8), 81.1vh); animation-timing-function: cubic-bezier(.45, .15, .55, .85); }
-  100% { transform: translate(0, 124vh); }
-}
-
-/* Pendulum swing (flat feather rocking on an arc): low point mid-swing
-   (+swayY, level), high at the extremes with max tilt — the feather stays
-   perpendicular to the virtual string, like a swing seat. The two beziers
-   share their joint slopes (0.1 and 5/3): slow at the extremes, fastest at
-   the bottom of the arc, no velocity jumps. */
-@keyframes featherSway {
-  0% { transform: translateX(calc(var(--swayX) * -1)) translateY(0) rotate(var(--swayR)); animation-timing-function: cubic-bezier(.5, .05, .7, .5); }
-  25% { transform: translateX(0) translateY(var(--swayY)) rotate(0deg); animation-timing-function: cubic-bezier(.3, .5, .5, .95); }
-  50% { transform: translateX(var(--swayX)) translateY(0) rotate(calc(var(--swayR) * -1)); animation-timing-function: cubic-bezier(.5, .05, .7, .5); }
-  75% { transform: translateX(0) translateY(var(--swayY)) rotate(0deg); animation-timing-function: cubic-bezier(.3, .5, .5, .95); }
-  100% { transform: translateX(calc(var(--swayX) * -1)) translateY(0) rotate(var(--swayR)); }
-}
+/* Feather motion (spec 2026-07-10 v3): descent, meander and pitch are a baked
+   physics trajectory played via WAAPI (see src/lib/feather-physics.js) — only
+   the 3D quiver of the feather plane lives in CSS keyframes below. --flutX /
+   --flutY are set per feather on the outer wrapper by site.js — no fallbacks
+   on purpose, feathers are only ever built with both variables set. */
 
 /* 3D quiver of the feather plane (most feathers). */
 @keyframes featherFlutter {
