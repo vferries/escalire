@@ -26,5 +26,5 @@ La maquette de référence est `design/escalire.html` (HTML standalone haute-fid
 ## Pièges connus
 - Les séparations « papier déchiré » chevauchent la section précédente de −90px : gérer le z-index (bande au-dessus, contenu des sections en `position: relative`).
 - La barre de progression et la nav sont fixes : `scroll-margin-top: 84px` obligatoire sur les sections.
-- Les plumes qui tombent sont recréées avec 3 wrappers imbriqués (chute / balancement / rotation-teinte) — ne pas fusionner les transforms.
+- Les plumes qui tombent sont recréées avec 4 wrappers imbriqués (chute+dérive / balancement / frémissement / rotation-teinte) — ne pas fusionner les transforms.
 - Ne pas mettre `overflow: hidden` sur `body` ; chaque section masque ses propres débordements.

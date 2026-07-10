@@ -217,11 +217,11 @@ function highlightToday() {
 
 // --- Falling feathers + scroll gust -------------------------------------------
 //
-// Ported from design/escalire-source.html:
-// - mkSeeds ranges: lines 1601-1614
-// - gust accumulation (scroll handler): lines 1647-1651
-// - gust decay loop: lines 1695-1707
-// - 3-wrapper DOM (outer/fall/sway/tinted-mask): lines 1785-1815
+// Gust interaction ported from design/escalire-source.html (accumulation:
+// lines 1647-1651, decay loop: lines 1695-1707). The motion model deliberately
+// diverges from the mockup's linear fall + metronome sway (Vincent's request):
+// falling-leaf glide with stall/dive rhythm, aperiodic horizontal drift and 3D
+// flutter — see docs/superpowers/specs/2026-07-10-natural-feather-motion-design.md.
 //
 // Vincent's decision: fixed look, no user-facing intensity control. Feathers
 // are "many + slightly transparent" — full immersif counts, permanent 0.6
@@ -232,19 +232,39 @@ const HERO_PALETTE = ['#e8442e', '#f08a67', '#2b3f77', '#4a76b8', '#6aa7cc', '#2
 const EVENTS_PALETTE = ['#f08a67', '#6aa7cc', '#c9dfed', '#e8442e', '#4a76b8', '#faf6ef'];
 
 function mkSeeds(n, colors) {
-  return Array.from({ length: n }, (_, i) => ({
-    left: 2 + Math.random() * 96,
-    dur: 15 + Math.random() * 17,
-    delay: -Math.random() * 30,
-    sway: 3.4 + Math.random() * 3.6,
-    w: 26 + Math.random() * 28,
-    o: 0.55 + Math.random() * 0.4,
-    rot: -40 + Math.random() * 80,
-    depth: 0.45 + Math.random() * 0.95,
-    blur: Math.random() < 0.3 ? 1.4 : 0,
-    flip: Math.random() < 0.5,
-    color: colors[i % colors.length],
-  }));
+  return Array.from({ length: n }, (_, i) => {
+    const w = 26 + Math.random() * 28;
+    const swayX = 18 + Math.random() * 46;
+    return {
+      left: 2 + Math.random() * 96,
+      // large feathers read denser and fall a bit faster
+      dur: 34 - w * 0.25 + Math.random() * 8,
+      delay: -Math.random() * 30,
+      // wide glides swing slower, like a long pendulum
+      sway: 2.6 + swayX * 0.055 + Math.random() * 1.4,
+      swayX,
+      swayY: swayX * (0.18 + Math.random() * 0.16),
+      swayR: 10 + Math.random() * 14,
+      swayDelay: -Math.random() * 12,
+      driftX: (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 60),
+      twirl: Math.random() < 0.12,
+      twirlDur: 5 + Math.random() * 6,
+      twirlReverse: Math.random() < 0.5,
+      // flat feather: the main quiver is around its long (horizontal) axis (rotateX)
+      flutX: 6 + Math.random() * 8,
+      flutY: 4 + Math.random() * 6,
+      flutDur: 1.8 + Math.random() * 1.8,
+      flutDelay: -Math.random() * 8,
+      w,
+      o: 0.55 + Math.random() * 0.4,
+      // quill near horizontal — the feathers lie flat and rock like a pendulum
+      rot: 74 + Math.random() * 32,
+      depth: 0.45 + Math.random() * 0.95,
+      blur: Math.random() < 0.3 ? 1.4 : 0,
+      flip: Math.random() < 0.5,
+      color: colors[i % colors.length],
+    };
+  });
 }
 
 // Seeds are generated once and reused across rebuilds: intensity changes only
@@ -292,18 +312,33 @@ function featherMaskUrl(container) {
   return `${base}assets/feather-mask.png`;
 }
 
-// 3 wrappers: outer (position + gust translateY) / fall (linear) / sway
-// (sinusoidal) / innermost tinted mask div. Keep them separate — merging the
+// 4 wrappers: outer (position + gust translateY + per-feather CSS variables) /
+// fall (descent + slow drift) / sway (pendulum glide) / flutter (3D quiver or
+// twirl) / innermost tinted mask div. Keep them separate — merging the
 // transforms breaks the independent animations (see CLAUDE.md).
 function buildFeather(seed, maskUrl) {
   const outer = document.createElement('div');
   outer.style.cssText = `position:absolute; top:0; left:${seed.left}%; will-change:transform;`;
+  // amplitudes consumed by the shared keyframes (inherited by the wrappers below);
+  // resolved at style time, so the animations stay compositor-driven
+  outer.style.setProperty('--driftX', `${seed.driftX.toFixed(1)}px`);
+  outer.style.setProperty('--swayX', `${seed.swayX.toFixed(1)}px`);
+  outer.style.setProperty('--swayY', `${seed.swayY.toFixed(1)}px`);
+  outer.style.setProperty('--swayR', `${seed.swayR.toFixed(1)}deg`);
+  outer.style.setProperty('--flutX', `${seed.flutX.toFixed(1)}deg`);
+  outer.style.setProperty('--flutY', `${seed.flutY.toFixed(1)}deg`);
 
   const fall = document.createElement('div');
+  // per-segment timing functions live in the keyframes; 'linear' is just the base
   fall.style.animation = `featherFall ${seed.dur}s linear ${seed.delay}s infinite`;
 
   const sway = document.createElement('div');
-  sway.style.animation = `featherSway ${seed.sway}s ease-in-out ${seed.delay}s infinite`;
+  sway.style.animation = `featherSway ${seed.sway}s linear ${seed.swayDelay}s infinite`;
+
+  const flutter = document.createElement('div');
+  flutter.style.animation = seed.twirl
+    ? `featherTwirl ${seed.twirlDur}s linear ${seed.flutDelay}s infinite ${seed.twirlReverse ? 'reverse' : 'normal'}`
+    : `featherFlutter ${seed.flutDur}s ease-in-out ${seed.flutDelay}s infinite`;
 
   const feather = document.createElement('div');
   feather.style.cssText = [
@@ -321,7 +356,8 @@ function buildFeather(seed, maskUrl) {
     seed.blur ? 'filter:blur(1.4px)' : 'filter:none',
   ].join(';');
 
-  sway.appendChild(feather);
+  flutter.appendChild(feather);
+  sway.appendChild(flutter);
   fall.appendChild(sway);
   outer.appendChild(fall);
   return outer;
