@@ -8,12 +8,15 @@ import cormorant600 from '@fontsource/cormorant-garamond/files/cormorant-garamon
 interface Props {
   title: string;
   description: string;
+  /** page path under the base, e.g. 'mentions-legales/' — '' = home */
+  path?: string;
 }
-const { title, description } = Astro.props;
+const { title, description, path = '' } = Astro.props;
 const infos = await getEntry('infos', 'infos');
 const annonce = infos?.data.annonce ?? '';
 const base = import.meta.env.BASE_URL;
-const canonical = new URL(base, Astro.site).href;
+const canonical = new URL(base + path, Astro.site).href;
+const isHome = path === '';
 
 // JSON-LD BookStore: opening hours derived from infos.horaires (schema.org day names,
 // two specs per open day — morning and afternoon slot).
@@ -73,7 +76,7 @@ const jsonLd = {
     <meta property="og:locale" content="fr_FR" />
     <meta name="twitter:card" content="summary" />
     {/* escape < so CMS-edited strings can never close the script tag */}
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\u003c')} />
+    {isHome && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\u003c')} />}
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     {/* fetchpriority must match the Hero <img>'s hint: the preload's own priority
        wins over the later <img>, and images preload at "Low" by default */}

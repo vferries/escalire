@@ -4,4 +4,8 @@
     <loc>https://vferries.github.io/escalire/</loc>
     <changefreq>weekly</changefreq>
   </url>
+  <url>
+    <loc>https://vferries.github.io/escalire/mentions-legales/</loc>
+    <changefreq>yearly</changefreq>
+  </url>
 </urlset>

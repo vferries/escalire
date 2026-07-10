@@ -35,3 +35,29 @@ describe('static map (spec SP5 I2)', () => {
     expect(read('src/scripts/site.js')).toContain(".querySelector('.map-static')");
   });
 });
+
+describe('mentions légales (spec SP5 I3/I4)', () => {
+  it('carries the exact legal identifiers', () => {
+    const page = read('src/pages/mentions-legales.astro');
+    expect(page).toContain('EURL Librairie Escalire');
+    expect(page).toContain('752 566 893 00018');
+    expect(page).toContain('Anne-Sophie Delage');
+    expect(page).toContain('GitHub'); // hébergeur
+    expect(page).toContain('OVH'); // domaine/DNS seulement
+  });
+  it('is linked from the footer instead of the old external page', () => {
+    const footer = read('src/components/Footer.astro');
+    expect(footer).toContain('mentions-legales/');
+    expect(footer).not.toContain('MentionsLegales.html');
+  });
+  it('is listed in the sitemap', () => {
+    expect(read('public/sitemap.xml')).toContain(
+      'https://vferries.github.io/escalire/mentions-legales/'
+    );
+  });
+  it('nav anchors are base-absolute so they work from subpages', () => {
+    const nav = read('src/components/Nav.astro');
+    expect(nav).toContain("`${base}#librairie`");
+    expect(nav).toContain('href={`${base}#accueil`}');
+  });
+});

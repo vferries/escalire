@@ -11,8 +11,8 @@
 3. **VPS mutualisé français** (o2switch, Infomaniak) si la librairie préfère un interlocuteur FR unique — plus de maintenance manuelle.
 
 ## Checklist mise en ligne
-- [ ] Redirections 301 depuis les anciennes URLs de escalire.fr (au minimum `/MentionsLegales.html`)
-- [ ] Mentions légales reprises du site actuel
+- [ ] Redirections 301 depuis les anciennes URLs de escalire.fr (au minimum `/MentionsLegales.html` → `/mentions-legales/`)
+- [x] Mentions légales reprises du site actuel — page interne `/mentions-legales/` (SP5, contenu actualisé : hébergeur GitHub Pages, volet données personnelles)
 - [ ] Meta locales + schema.org BookStore + sitemap + robots.txt
 - [x] Déclaration RGPD minimale : la carte charge des tuiles CARTO (IP transmise) — bandeau simple ou tuiles proxifiées ; pas d'analytics ou analytics sans cookie (Plausible)
 - [ ] Test Lighthouse mobile > 90 perf / 100 a11y sur la page

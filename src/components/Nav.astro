@@ -10,17 +10,17 @@ const hasCoupsDeCoeur = selectCoupsDeCoeur(await getCollection('coupsDeCoeur')).
 const hasEquipe = selectCoupsDeCoeur(await getCollection('equipe'), Infinity).length > 0;
 
 const allLinks: [string, string, boolean][] = [
-  ['#librairie', 'La librairie', true],
-  ['#coups-de-coeur', 'Coups de cœur', hasCoupsDeCoeur],
-  ['#evenements', 'Rencontres', true],
-  ['#equipe', "L'équipe", hasEquipe],
-  ['#infos', 'Horaires & accès', true],
+  [`${base}#librairie`, 'La librairie', true],
+  [`${base}#coups-de-coeur`, 'Coups de cœur', hasCoupsDeCoeur],
+  [`${base}#evenements`, 'Rencontres', true],
+  [`${base}#equipe`, "L'équipe", hasEquipe],
+  [`${base}#infos`, 'Horaires & accès', true],
 ];
 const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string, string] => [href, label]);
 ---
 <div id="progress-bar" aria-hidden="true"></div>
 <nav id="site-nav" aria-label="Navigation principale">
-  <a href="#accueil" class="nav-logo">
+  <a href={`${base}#accueil`} class="nav-logo">
     <img src={`${base}assets/logo-escalire.png`} alt="Librairie Escalire" width="77" height="38" />
   </a>
   <div class="nav-links">
