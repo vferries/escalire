@@ -1,6 +1,6 @@
 ---
-prenom: "Prénom"
-rayon: "rayon favori"
+prenom: Stagiaire
+rayon: Littérature jeunesse
 visible: true
 ordre: 2
 ---
