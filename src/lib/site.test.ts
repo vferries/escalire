@@ -51,15 +51,23 @@ describe('natural feather motion (spec 2026-07-10, v3 physics)', () => {
     expect(js()).not.toContain('featherFall');
     expect(js()).not.toContain('featherSway');
   });
-  it('keeps the 3D flutter and twirl variants', () => {
+  it('keeps the 3D flutter quiver on every feather', () => {
     expect(css()).toContain('@keyframes featherFlutter');
-    expect(css()).toContain('@keyframes featherTwirl');
     expect(js()).toContain('featherFlutter');
-    expect(js()).toContain('featherTwirl');
+  });
+  it('replaces continuous twirls with a small per-turn flip chance on every feather', () => {
+    expect(css()).not.toContain('featherTwirl');
+    expect(js()).not.toContain('featherTwirl');
+    expect(js()).toContain('addFlips');
+    expect(js()).toMatch(/rotateY\(/);
   });
   it('lays the feathers flat and dampens the simulated pitch for the flat look', () => {
     expect(js()).toMatch(/rot: 74 \+ Math\.random\(\) \* 32/);
     expect(js()).toMatch(/thScale/);
+  });
+  it('mirrors in screen space so the curved side stays down on both variants', () => {
+    expect(js()).toMatch(/mirror \? 'scaleX\(-1\) ' : ''/);
+    expect(js()).not.toMatch(/rotate\(\$\{seed\.rot\}deg\)\$\{seed\./);
   });
   it('keeps the physics off the critical path: first build deferred to idle', () => {
     expect(js()).toMatch(/requestIdleCallback/);

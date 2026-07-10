@@ -132,3 +132,36 @@ export function toLoopingKeyframes(samples, n = 180) {
   kf[kf.length - 1].y = 1;
   return kf;
 }
+
+// Give every feather a small chance to flip over (rotateY half-turn) at each
+// glide turn — rather than a few feathers twirling continuously. Turns are
+// where the baked meander reverses direction; a flip eases over `span`
+// keyframes starting at the turn. The face angle accumulates (0 → ±180 →
+// ±360 …) and needs no loop closure: the screen wrap happens offscreen.
+export function addFlips(kf, { chance, rng = Math.random, span = 6 } = {}) {
+  const events = [];
+  const half = Math.floor(span / 2);
+  let lastEnd = -1;
+  for (let i = 1; i < kf.length - 1; i++) {
+    const before = kf[i].x - kf[i - 1].x;
+    const after = kf[i + 1].x - kf[i].x;
+    if (before * after >= 0) continue; // not a turn
+    const start = i - half;
+    if (start <= lastEnd || start < 1 || start + span >= kf.length - 1) continue;
+    if (rng() >= chance) continue;
+    events.push({ start, dir: rng() < 0.5 ? -180 : 180 });
+    lastEnd = start + span;
+  }
+  const smooth = (u) => u * u * (3 - 2 * u);
+  let base = 0;
+  let e = 0;
+  return kf.map((k, i) => {
+    if (e < events.length && i >= events[e].start + span) {
+      base += events[e].dir;
+      e++;
+    }
+    const ev = events[e];
+    const inWindow = ev && i >= ev.start && i < ev.start + span;
+    return { ...k, flip: inWindow ? base + ev.dir * smooth((i - ev.start) / (span - 1)) : base };
+  });
+}

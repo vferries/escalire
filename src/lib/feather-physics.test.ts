@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultParams, simulateFeather, toLoopingKeyframes } from './feather-physics.js';
+import { addFlips, defaultParams, simulateFeather, toLoopingKeyframes } from './feather-physics.js';
 
 // Deterministic RNG (mulberry32) so the physics assertions are reproducible.
 function mulberry32(a: number) {
@@ -75,5 +75,49 @@ describe('feather physics (spec 2026-07-10, v3)', () => {
     const a = toLoopingKeyframes(run(7), 120);
     const b = toLoopingKeyframes(run(7), 120);
     expect(a).toEqual(b);
+  });
+});
+
+describe('feather flips at glide turns (v3.1)', () => {
+  const kf = () => toLoopingKeyframes(run(1), 160);
+
+  it('leaves the feather face alone when chance is 0', () => {
+    for (const k of addFlips(kf(), { chance: 0, rng: mulberry32(9) })) expect(k.flip).toBe(0);
+  });
+
+  it('flips by exactly ±180° per event, only around meander turning points', () => {
+    const flipped = addFlips(kf(), { chance: 1, rng: mulberry32(9) });
+    expect(flipped.length).toBe(160);
+    // plateaus between events are multiples of 180, and at least one flip fired
+    const plateaus = [...new Set(flipped.map((k) => k.flip))].filter(
+      (a) => Math.abs(Math.round(a) % 180) === 0,
+    );
+    expect(plateaus.length).toBeGreaterThanOrEqual(2);
+    // the face angle is piecewise constant: transitions are confined to short
+    // windows (a flip spans ~6 keyframes), the rest of the loop is flat
+    let moving = 0;
+    for (let i = 1; i < flipped.length; i++) if (flipped[i].flip !== flipped[i - 1].flip) moving++;
+    expect(moving).toBeGreaterThan(0);
+    expect(moving).toBeLessThan(flipped.length * 0.6);
+    // each transition is monotonic toward the next plateau (no wobble)
+    const first = flipped.find((k) => k.flip !== 0);
+    expect(first).toBeDefined();
+  });
+
+  it('keeps the trajectory itself untouched', () => {
+    const base = kf();
+    const flipped = addFlips(base, { chance: 1, rng: mulberry32(9) });
+    for (let i = 0; i < base.length; i++) {
+      expect(flipped[i].x).toBe(base[i].x);
+      expect(flipped[i].y).toBe(base[i].y);
+      expect(flipped[i].th).toBe(base[i].th);
+      expect(flipped[i].offset).toBe(base[i].offset);
+    }
+  });
+
+  it('is deterministic for a fixed rng', () => {
+    expect(addFlips(kf(), { chance: 0.5, rng: mulberry32(4) })).toEqual(
+      addFlips(kf(), { chance: 0.5, rng: mulberry32(4) }),
+    );
   });
 });

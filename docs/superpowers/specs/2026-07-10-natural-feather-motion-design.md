@@ -154,3 +154,23 @@ convention du projet est respectée).
 - Tests : comportementaux sur le module (descend, alterne ≥ 4 virages sans
   culbuter, keyframes normalisées et déterministes à graine fixée) + golden checks
   site.js/CSS mis à jour.
+
+### v3.1 — retournements probabilistes, courbure en bas
+
+Vincent : « Plutôt qu'une plume de temps en temps qui se retourne à chacun de ses
+virages, j'aurais préféré que chacune ait une très petite chance de se retourner à
+chaque virage » ; « leur faire garder le côté courbé en bas (et faire des miroirs
+pour en avoir des deux côtés) ».
+
+- Vrilles continues supprimées (`featherTwirl`). À la place, `addFlips()` détecte
+  les virages dans les keyframes cuites (inversion du sens de glisse) et, avec une
+  probabilité de 4–10 % par virage et par plume, y insère un retournement rotateY
+  de ±180° lissé (smoothstep sur ~6 keyframes), cumulé dans la trajectoire WAAPI.
+  Quand une plume se retourne au moins une fois, toutes ses keyframes portent la
+  paire perspective+rotateY pour garder des listes de transforms interpolables.
+- Plume à plat, côté courbé (convexe) toujours en bas : le miroir gauche/droite
+  est appliqué en espace écran (`scaleX(-1)` AVANT `rotate` dans la liste CSS,
+  donc après la rotation) au lieu de refléter l'artwork avant rotation — c'est ce
+  qui retournait la courbure vers le haut sur la moitié des plumes. Le
+  retournement en vol inverse la pointe gauche↔droite et conserve la courbure en
+  bas (rotation autour de l'axe vertical).

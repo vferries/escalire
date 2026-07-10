@@ -79,24 +79,15 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
-/* Feather motion (spec 2026-07-10 v3): descent, meander and pitch are a baked
-   physics trajectory played via WAAPI (see src/lib/feather-physics.js) — only
-   the 3D quiver of the feather plane lives in CSS keyframes below. --flutX /
-   --flutY are set per feather on the outer wrapper by site.js — no fallbacks
-   on purpose, feathers are only ever built with both variables set. */
-
-/* 3D quiver of the feather plane (most feathers). */
+/* Feather motion (spec 2026-07-10 v3): descent, meander, pitch and the rare
+   flip-over at a glide turn are a baked physics trajectory played via WAAPI
+   (see src/lib/feather-physics.js) — only the 3D quiver of the feather plane
+   lives in the CSS keyframes below. --flutX / --flutY are set per feather on
+   the outer wrapper by site.js — no fallbacks on purpose, feathers are only
+   ever built with both variables set. */
 @keyframes featherFlutter {
   0%, 100% { transform: perspective(600px) rotateX(calc(var(--flutX) * -1)) rotateY(calc(var(--flutY) * -1)); }
   50% { transform: perspective(600px) rotateX(var(--flutX)) rotateY(var(--flutY)); }
-}
-
-/* Continuous twirl (~22% of feathers). The constant rotateX tilt keeps it from
-   reading as a flat card flip; the brief edge-on sliver twice per turn is
-   intentional (a thin feather catching the air). */
-@keyframes featherTwirl {
-  0% { transform: perspective(600px) rotateX(var(--flutX)) rotateY(0deg); }
-  100% { transform: perspective(600px) rotateX(var(--flutX)) rotateY(360deg); }
 }
 @keyframes cueBob { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(9px); opacity: 1; } }
 @keyframes inkDrift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(2.5%, 3.5%) scale(1.07); } }

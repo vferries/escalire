@@ -8,7 +8,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { defaultParams, simulateFeather, toLoopingKeyframes } from '../lib/feather-physics.js';
+import { addFlips, defaultParams, simulateFeather, toLoopingKeyframes } from '../lib/feather-physics.js';
 
 const INTENSITES = { immersif: 1, discret: 0 };
 const amp = () => INTENSITES[document.documentElement.dataset.intensite] ?? 1;
@@ -238,8 +238,11 @@ const EVENTS_PALETTE = ['#f08a67', '#6aa7cc', '#c9dfed', '#e8442e', '#4a76b8', '
 function mkSeeds(n, colors) {
   return Array.from({ length: n }, (_, i) => {
     const w = 26 + Math.random() * 28;
-    // one physics run per feather: unique, aperiodic flutter trajectory
-    const path = toLoopingKeyframes(simulateFeather(defaultParams()), 160);
+    // one physics run per feather: unique, aperiodic flutter trajectory, plus
+    // a small chance to flip over (half rotateY turn) at each glide turn
+    const path = addFlips(toLoopingKeyframes(simulateFeather(defaultParams()), 160), {
+      chance: 0.04 + Math.random() * 0.06,
+    });
     const xAmp = Math.max(...path.map((k) => Math.abs(k.x))) || 1;
     return {
       left: 2 + Math.random() * 96,
@@ -251,9 +254,6 @@ function mkSeeds(n, colors) {
       xScale: (30 + Math.random() * 50) / xAmp,
       // aesthetic dampening of the simulated pitch (Vincent wants them flat-ish)
       thScale: 0.55 + Math.random() * 0.2,
-      twirl: Math.random() < 0.12,
-      twirlDur: 5 + Math.random() * 6,
-      twirlReverse: Math.random() < 0.5,
       // flat feather: the main quiver is around its long (horizontal) axis (rotateX)
       flutX: 6 + Math.random() * 8,
       flutY: 4 + Math.random() * 6,
@@ -261,11 +261,12 @@ function mkSeeds(n, colors) {
       flutDelay: -Math.random() * 8,
       w,
       o: 0.55 + Math.random() * 0.4,
-      // quill near horizontal — the feathers lie flat and rock like a pendulum
+      // quill near horizontal, curved side always down — the feathers lie flat
       rot: 74 + Math.random() * 32,
       depth: 0.45 + Math.random() * 0.95,
       blur: Math.random() < 0.3 ? 1.4 : 0,
-      flip: Math.random() < 0.5,
+      // screen-space mirror: tip points left or right, curved side stays down
+      mirror: Math.random() < 0.5,
       color: colors[i % colors.length],
     };
   });
@@ -338,18 +339,21 @@ function buildFeather(seed, maskUrl) {
   outer.style.setProperty('--flutY', `${seed.flutY.toFixed(1)}deg`);
 
   const path = document.createElement('div');
+  // if the feather ever flips, every keyframe carries the perspective+rotateY
+  // pair so the transform lists stay interpolation-compatible
+  const flips = seed.path.some((k) => k.flip !== 0);
   path.animate(
     seed.path.map((k) => ({
       offset: k.offset,
-      transform: `translate(${(k.x * seed.xScale).toFixed(1)}px, ${(-24 + 148 * k.y).toFixed(2)}vh) rotate(${(k.th * seed.thScale).toFixed(1)}deg)`,
+      transform:
+        `translate(${(k.x * seed.xScale).toFixed(1)}px, ${(-24 + 148 * k.y).toFixed(2)}vh) rotate(${(k.th * seed.thScale).toFixed(1)}deg)` +
+        (flips ? ` perspective(600px) rotateY(${k.flip.toFixed(1)}deg)` : ''),
     })),
     { duration: seed.dur * 1000, iterations: Infinity, delay: -seed.phase * seed.dur * 1000 },
   );
 
   const flutter = document.createElement('div');
-  flutter.style.animation = seed.twirl
-    ? `featherTwirl ${seed.twirlDur}s linear ${seed.flutDelay}s infinite ${seed.twirlReverse ? 'reverse' : 'normal'}`
-    : `featherFlutter ${seed.flutDur}s ease-in-out ${seed.flutDelay}s infinite`;
+  flutter.style.animation = `featherFlutter ${seed.flutDur}s ease-in-out ${seed.flutDelay}s infinite`;
 
   const feather = document.createElement('div');
   feather.style.cssText = [
@@ -363,7 +367,8 @@ function buildFeather(seed, maskUrl) {
     '-webkit-mask-repeat:no-repeat',
     'mask-repeat:no-repeat',
     `opacity:${seed.opacity}`,
-    `transform:rotate(${seed.rot}deg)${seed.flip ? ' scaleX(-1)' : ''}`,
+    // mirror OUTSIDE the rotation (screen space): the curved side stays down
+    `transform:${seed.mirror ? 'scaleX(-1) ' : ''}rotate(${seed.rot}deg)`,
     seed.blur ? 'filter:blur(1.4px)' : 'filter:none',
   ].join(';');
 
