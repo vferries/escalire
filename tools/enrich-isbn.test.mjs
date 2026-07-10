@@ -106,4 +106,9 @@ describe('applyEnrichment', () => {
     expect(out.match(/titre: "(x+)"/)[1]).toHaveLength(120);
     expect(out).toContain('auteur: "Dit \\"Le Bref\\""');
   });
+  it('preserves CRLF line endings when inserting into a Windows-authored file', () => {
+    const md = `---\r\nisbn13: "1"\r\ncitation: "x"\r\n---\r\n`;
+    const out = applyEnrichment(md, { titre: 'Test' }, ['titre']);
+    expect(out).toBe(`---\r\nisbn13: "1"\r\ncitation: "x"\r\ntitre: "Test"\r\n---\r\n`);
+  });
 });

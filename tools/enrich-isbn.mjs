@@ -67,7 +67,7 @@ export function applyEnrichment(md, meta, missing) {
     const line = `${key}: "${clamp(meta[key], CAPS[key]).replace(/"/g, '\\"')}"`;
     const existing = new RegExp(`^${key}:.*$`, 'm');
     if (existing.test(out)) out = out.replace(existing, line);
-    else out = out.replace(/\r?\n---/, `\n${line}\n---`); // first \n--- = closing delimiter
+    else out = out.replace(/(\r?\n)---/, (_, nl) => `${nl}${line}${nl}---`); // first newline+--- = closing delimiter
   }
   return out;
 }
