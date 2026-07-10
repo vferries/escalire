@@ -194,6 +194,7 @@ function setupMap() {
     // into that brand-new listener and is read as "user clicked the map",
     // which auto-closes the popup we just opened.
     e.stopPropagation();
+    el.querySelector('.map-static')?.remove();
     btn.remove();
     initMap(el); // Leaflet is bundled; only the CARTO tile requests are deferred
     // The consent button (previous focus target) is gone; move focus to the

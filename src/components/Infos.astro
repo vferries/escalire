@@ -94,17 +94,24 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
 
     <div data-reveal="up" data-delay="140" class="map-frame">
       <div id="map-escalire" data-lat={data.adresse.lat} data-lng={data.adresse.lng} data-base={base}>
+        <img
+          src={`${base}assets/map-escalire.jpg`}
+          alt="Plan d'accès : librairie Escalire, Espace 61, 61 avenue de Toulouse à Escalquens"
+          class="map-static"
+          width="1116"
+          height="380"
+          loading="lazy"
+        />
         <button type="button" class="map-consent">
-          <span
-            class="map-consent-feather"
-            aria-hidden="true"
-            style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
-          ></span>
-          <span class="map-consent-title">Afficher la carte</span>
-          <span class="map-consent-note">Fond de carte CARTO — en affichant la carte, votre adresse IP est transmise à ce service.</span>
+          <span class="map-consent-title">Activer la carte interactive</span>
         </button>
       </div>
       <p class="map-caption">au centre commercial Espace 61 — parking gratuit devant la porte</p>
+      <p class="map-attribution">
+        © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors
+        © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>
+        — la carte interactive charge les tuiles CARTO (adresse IP transmise à ce service).
+      </p>
     </div>
   </div>
 </section>
@@ -312,43 +319,49 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
     color: var(--navy);
   }
 
-  .map-consent {
+  .map-static {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .map-consent {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    gap: 10px;
-    padding: 24px;
+    padding: 18px;
     border: none;
     background: transparent;
     cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  .map-consent:hover {
-    transform: translateY(-3px);
-  }
-  .map-consent-feather {
-    display: block;
-    width: 40px;
-    aspect-ratio: 636 / 1220;
-    background: var(--blue-light);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
   }
   .map-consent-title {
     font-family: var(--font-body);
-    font-size: 19px;
-    color: var(--navy);
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    color: var(--paper);
+    background: rgba(24, 26, 32, 0.85); /* --ink at 85%: AA on any map background */
+    padding: 11px 22px;
+    border-radius: 999px;
+    transition: background 0.3s ease, transform 0.3s ease;
   }
-  .map-consent-note {
-    font-family: var(--font-hand);
-    font-size: 18px;
+  .map-consent:hover .map-consent-title,
+  .map-consent:focus-visible .map-consent-title {
+    background: var(--navy);
+    transform: translateY(-2px);
+  }
+  .map-attribution {
+    margin: 2px 8px 4px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
     color: var(--text-3);
-    max-width: 340px;
+  }
+  .map-attribution a {
+    color: inherit;
   }
 
   @media (max-width: 720px) {
