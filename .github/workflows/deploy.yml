@@ -29,7 +29,11 @@ jobs:
       - run: npm ci
       # SP4: fill titre/auteur/editeur from the ISBN before building
       - run: node tools/enrich-isbn.mjs
+      - run: npm test
+      - run: npm run build
       - name: Commit enriched metadata (bot)
+        # only runs once tests+build passed on the enriched tree — never commit
+        # enrichment output to main that hasn't proven green
         run: |
           if ! git diff --quiet -- src/content/coups-de-coeur; then
             git config user.name "github-actions[bot]"
@@ -40,8 +44,6 @@ jobs:
             # a lost race with a concurrent push is retried on the next run
             git push || echo "::warning::bot push failed — enrichment deployed anyway, commit retried next run"
           fi
-      - run: npm test
-      - run: npm run build
       - uses: actions/configure-pages@v5
         with:
           enablement: true

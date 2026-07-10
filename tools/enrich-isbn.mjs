@@ -17,6 +17,7 @@ const decodeXml = (s) =>
   s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 
 export function parseFrontmatter(md) {
+  md = md.replace(/^﻿/, '');
   const m = md.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return null;
   const fields = {};
@@ -64,9 +65,10 @@ export function applyEnrichment(md, meta, missing) {
   let out = md;
   for (const key of missing) {
     if (!meta[key]) continue;
-    const line = `${key}: "${clamp(meta[key], CAPS[key]).replace(/"/g, '\\"')}"`;
+    const value = clamp(meta[key].replace(/\s+/g, ' ').trim(), CAPS[key]);
+    const line = `${key}: "${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
     const existing = new RegExp(`^${key}:.*$`, 'm');
-    if (existing.test(out)) out = out.replace(existing, line);
+    if (existing.test(out)) out = out.replace(existing, () => line);
     else out = out.replace(/(\r?\n)---/, (_, nl) => `${nl}${line}${nl}---`); // first newline+--- = closing delimiter
   }
   return out;
@@ -107,7 +109,7 @@ async function main() {
           Object.entries((await source(fields.isbn13)) ?? {}).filter(([k, v]) => v && !meta[k])
         ));
       } catch (e) {
-        warn(path, `${source.name} failed for ISBN ${fields.isbn13}: ${e.message}`);
+        console.log(`::notice file=${path}::${source.name} failed for ISBN ${fields.isbn13}: ${e.message}`);
       }
     }
 

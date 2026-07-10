@@ -48,6 +48,9 @@ describe('parseFrontmatter / missingFields', () => {
   it('returns null without frontmatter', () => {
     expect(parseFrontmatter('pas de frontmatter')).toBeNull();
   });
+  it('tolerates a UTF-8 BOM at the start of the file', () => {
+    expect(parseFrontmatter('﻿' + MD).isbn13).toBe('9782369903086');
+  });
 });
 
 describe('parseBnf', () => {
@@ -110,5 +113,18 @@ describe('applyEnrichment', () => {
     const md = `---\r\nisbn13: "1"\r\ncitation: "x"\r\n---\r\n`;
     const out = applyEnrichment(md, { titre: 'Test' }, ['titre']);
     expect(out).toBe(`---\r\nisbn13: "1"\r\ncitation: "x"\r\ntitre: "Test"\r\n---\r\n`);
+  });
+  it('collapses embedded newlines/whitespace in fetched values', () => {
+    const out = applyEnrichment(MD, { titre: 'Un titre\n  sur deux lignes' }, ['titre']);
+    expect(out).toContain('titre: "Un titre sur deux lignes"');
+  });
+  it('escapes backslashes so the YAML scalar stays valid', () => {
+    const out = applyEnrichment(MD, { titre: 'Anti\\slash' }, ['titre']);
+    expect(out).toContain('titre: "Anti\\\\slash"');
+  });
+  it('does not expand $-replacement patterns when replacing an existing line', () => {
+    const md = `---\nisbn13: "1"\ntitre: ""\n---\n`;
+    const out = applyEnrichment(md, { titre: 'Prix: 10$& plus' }, ['titre']);
+    expect(out).toContain('titre: "Prix: 10$& plus"');
   });
 });
