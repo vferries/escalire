@@ -1,7 +1,10 @@
 // Regenerates public/assets/map-escalire.jpg (the RGPD-friendly static map).
 // One-off tool — run it again only if the map look, marker or coords change.
 // Usage: `npm run dev` in another terminal, then:
-//   npx -y -p playwright node tools/capture-map.mjs
+//   npm install --no-save playwright && node tools/capture-map.mjs
+// (`npx -p playwright node ...` does NOT work: the ESM import resolves
+// node_modules relative to this file, not the npx cache. `--no-save`
+// leaves package.json/lockfile untouched; `npm ci` cleans up afterwards.)
 // Requires desktop Chrome (channel: 'chrome' — no browser download).
 import { chromium } from 'playwright';
 

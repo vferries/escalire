@@ -60,4 +60,12 @@ describe('mentions légales (spec SP5 I3/I4)', () => {
     expect(nav).toContain("`${base}#librairie`");
     expect(nav).toContain('href={`${base}#accueil`}');
   });
+  it('emits the BookStore JSON-LD on the home page only', () => {
+    expect(read('src/layouts/Base.astro')).toContain(
+      '{isHome && <script type="application/ld+json"'
+    );
+  });
+  it('credits the site author', () => {
+    expect(read('src/pages/mentions-legales.astro')).toContain('enveille.info');
+  });
 });
