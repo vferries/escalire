@@ -261,8 +261,8 @@ function mkSeeds(n, colors) {
       flutDelay: -Math.random() * 8,
       w,
       o: 0.55 + Math.random() * 0.4,
-      // quill near horizontal, curved side always down — the feathers lie flat
-      rot: 74 + Math.random() * 32,
+      // quill near horizontal, bulging (convex) side always down — flat feathers
+      rot: 254 + Math.random() * 32,
       depth: 0.45 + Math.random() * 0.95,
       blur: Math.random() < 0.3 ? 1.4 : 0,
       // screen-space mirror: tip points left or right, curved side stays down

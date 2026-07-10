@@ -62,7 +62,7 @@ describe('natural feather motion (spec 2026-07-10, v3 physics)', () => {
     expect(js()).toMatch(/rotateY\(/);
   });
   it('lays the feathers flat and dampens the simulated pitch for the flat look', () => {
-    expect(js()).toMatch(/rot: 74 \+ Math\.random\(\) \* 32/);
+    expect(js()).toMatch(/rot: 254 \+ Math\.random\(\) \* 32/);
     expect(js()).toMatch(/thScale/);
   });
   it('mirrors in screen space so the curved side stays down on both variants', () => {
