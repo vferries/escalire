@@ -1,6 +1,6 @@
 ---
-prenom: "Prénom"
-rayon: "rayon favori"
+prenom: Anne-Sophie
+rayon: Polars et romans graphiques
 visible: true
 ordre: 1
 ---
