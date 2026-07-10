@@ -77,7 +77,8 @@ const jsonLd = {
     <meta name="twitter:card" content="summary" />
     {/* escape < so CMS-edited strings can never close the script tag */}
     {isHome && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\u003c')} />}
-    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={`${base}favicon.png`} type="image/png" />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} />
     {/* fetchpriority must match the Hero <img>'s hint: the preload's own priority
        wins over the later <img>, and images preload at "Low" by default */}
     <link rel="preload" as="image" href={`${base}assets/logo-escalire.png`} fetchpriority="high" />
