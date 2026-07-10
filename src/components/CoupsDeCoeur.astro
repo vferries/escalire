@@ -1,9 +1,15 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import BookCard from './BookCard.astro';
-import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
+import { selectCoupsDeCoeurPublies } from '../lib/coupsDeCoeur';
 
-const entries = selectCoupsDeCoeur(await getCollection('coupsDeCoeur'));
+const all = await getCollection('coupsDeCoeur');
+const entries = selectCoupsDeCoeurPublies(all);
+const sansTitre = all.filter((e) => e.data.visible && !e.data.titre);
+if (sansTitre.length > 0) {
+  // spec SP4: warning, not failure — the entry stays editable in the CMS
+  console.warn(`[coups-de-coeur] fiche(s) sans titre non publiée(s) : ${sansTitre.map((e) => e.id).join(', ')}`);
+}
 
 const infos = await getEntry('infos', 'infos');
 const placeDesLibraires = infos?.data.placeDesLibraires ?? '';

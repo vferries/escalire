@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { selectCoupsDeCoeur } from './coupsDeCoeur';
+import { selectCoupsDeCoeur, selectCoupsDeCoeurPublies } from './coupsDeCoeur';
 
 function makeEntry(id: string, ordre: number, visible = true) {
   return { id, data: { visible, ordre } };
@@ -35,5 +35,21 @@ describe('selectCoupsDeCoeur', () => {
 
   it('retourne un tableau vide pour une entrée vide', () => {
     expect(selectCoupsDeCoeur([])).toEqual([]);
+  });
+});
+
+describe('selectCoupsDeCoeurPublies', () => {
+  function livre(id: string, ordre: number, titre?: string) {
+    return { id, data: { visible: true, ordre, titre } };
+  }
+  it("exclut les fiches sans titre (ISBN non résolu, spec SP4)", () => {
+    const entries = [livre('a', 1, 'Un titre'), livre('b', 2), livre('c', 3, '')];
+    expect(selectCoupsDeCoeurPublies(entries).map((e) => e.id)).toEqual(['a']);
+  });
+  it('conserve le tri et le plafond du sélecteur de base', () => {
+    const entries = Array.from({ length: 8 }, (_, i) => livre(`e${i}`, 8 - i, `t${i}`));
+    const result = selectCoupsDeCoeurPublies(entries);
+    expect(result).toHaveLength(6);
+    expect(result[0].id).toBe('e7');
   });
 });

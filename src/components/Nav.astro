@@ -1,12 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
-import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
+import { selectCoupsDeCoeur, selectCoupsDeCoeurPublies } from '../lib/coupsDeCoeur';
 
 const base = import.meta.env.BASE_URL;
 
 // CoupsDeCoeur.astro and Equipe.astro render nothing when their collection
 // has zero visible entries; keep those nav links out of sync-safe zero-state.
-const hasCoupsDeCoeur = selectCoupsDeCoeur(await getCollection('coupsDeCoeur')).length > 0;
+const hasCoupsDeCoeur = selectCoupsDeCoeurPublies(await getCollection('coupsDeCoeur')).length > 0;
 const hasEquipe = selectCoupsDeCoeur(await getCollection('equipe'), Infinity).length > 0;
 
 const allLinks: [string, string, boolean][] = [
