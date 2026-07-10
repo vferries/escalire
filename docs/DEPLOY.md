@@ -28,7 +28,8 @@ Note : en project page GitHub (`vferries.github.io/escalire/`), robots.txt est s
 Le déploiement est automatisé par le workflow GitHub Actions `.github/workflows/deploy.yml` (« Deploy to GitHub Pages »).
 
 - **Déclencheurs** : push sur `main`, cron quotidien `0 4 * * *` (04:00 UTC — rebuild pour archiver les événements passés, spec S7), ou déclenchement manuel (`workflow_dispatch`).
-- **Étapes** : `npm ci` → `npm test` → `npm run build` → publication de `dist/` sur GitHub Pages.
+- **Étapes** : `npm ci` → enrichissement ISBN (`tools/enrich-isbn.mjs` : BnF puis Google Books ; commit bot `[skip ci]` si des champs ont été remplis) → `npm test` → `npm run build` → publication de `dist/` sur GitHub Pages.
+- Un ISBN introuvable produit une annotation *warning* sur le run (onglet Actions) et la fiche reste hors site jusqu'à correction dans l'admin — le build ne casse jamais pour ça.
 - **Suivi des runs** : onglet Actions du dépôt — https://github.com/vferries/escalire/actions
 - **Page en prod** : https://vferries.github.io/escalire/
 - **Fichier du workflow** : https://github.com/vferries/escalire/blob/main/.github/workflows/deploy.yml

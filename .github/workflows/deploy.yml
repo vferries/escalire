@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # bot commit of enriched coups de coeur (SP4); read elsewhere
   pages: write
   id-token: write
 
@@ -27,6 +27,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci
+      # SP4: fill titre/auteur/editeur from the ISBN before building
+      - run: node tools/enrich-isbn.mjs
+      - name: Commit enriched metadata (bot)
+        run: |
+          if ! git diff --quiet -- src/content/coups-de-coeur; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/content/coups-de-coeur
+            git commit -m "chore: enrich coups de coeur from ISBN [skip ci]"
+            # non-fatal: the enriched tree still builds and deploys below;
+            # a lost race with a concurrent push is retried on the next run
+            git push || echo "::warning::bot push failed — enrichment deployed anyway, commit retried next run"
+          fi
       - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v5

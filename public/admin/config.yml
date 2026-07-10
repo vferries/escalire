@@ -74,17 +74,19 @@ collections:
         widget: string
         required: false
         maxlength: 120
-        hint: À remplir pour l'instant (le remplissage automatique depuis l'ISBN arrive plus tard).
+        hint: Rempli automatiquement depuis l'ISBN quelques minutes après l'enregistrement — corrigez-le si besoin, votre saisie gagne toujours.
       - name: auteur
         label: Auteur / autrice
         widget: string
         required: false
         maxlength: 80
+        hint: Rempli automatiquement depuis l'ISBN — corrigez si besoin.
       - name: editeur
         label: Éditeur
         widget: string
         required: false
         maxlength: 60
+        hint: Rempli automatiquement depuis l'ISBN — corrigez si besoin.
       - name: couverture
         label: Couverture (secours)
         widget: image

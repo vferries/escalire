@@ -30,8 +30,11 @@ Firefox, Safari ou Edge récents).
    espaces ni tirets. La couverture est récupérée automatiquement à partir
    de ce numéro.
 3. **Citation** : votre mot de libraire, 1 à 2 phrases (200 caractères max).
-4. **Titre, auteur, éditeur** : à remplir (le remplissage automatique depuis
-   l'ISBN arrivera dans une prochaine étape).
+4. **Titre, auteur, éditeur** : laissez vide — ils sont remplis automatiquement
+   depuis l'ISBN quelques minutes après l'enregistrement. Vous pouvez les
+   corriger ensuite : votre saisie gagne toujours. Si l'ISBN est introuvable,
+   le coup de cœur reste invisible sur le site (et modifiable ici) jusqu'à ce
+   qu'un titre soit renseigné.
 5. **Visible** : coché = affiché sur le site. Le site montre au maximum
    **6 coups de cœur**, du plus petit « ordre » au plus grand.
 6. **Enregistrer**.
