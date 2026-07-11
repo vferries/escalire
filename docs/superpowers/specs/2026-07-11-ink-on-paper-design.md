@@ -1,7 +1,8 @@
 # Encres vivantes « ink on paper » — design
 
-Date: 2026-07-11 · Statut: validé par Vincent (approche C + remplacement des formes),
-planche contact des formes à valider avant câblage
+Date: 2026-07-11 · Statut: implémenté — formes validées par Vincent sur planche
+contact, puis câblé le jour même. Périmètre élargi en cours de route : les splats
+de CoupsDeCoeur et Equipe (oubliés du périmètre initial) sont traités aussi.
 
 ## Problème
 

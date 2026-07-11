@@ -16,7 +16,7 @@ const placeDesLibraires = infos?.data.placeDesLibraires ?? '';
 
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
-const inkSplat = `${base}assets/ink-splat.png`;
+const inkSplat = `${base}assets/ink-accent-coups.png`;
 const brushStroke = `${base}assets/brush-stroke.png`;
 const feather = `${base}assets/feather.png`;
 ---
@@ -30,9 +30,9 @@ const feather = `${base}assets/feather.png`;
         style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
       ></div>
       <div
-        data-reveal="pop"
+        data-reveal="ink-bloom"
         data-delay="380"
-        class="cdc-splat"
+        class="cdc-splat ink-sprite ink-alive"
         style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
       ></div>
     </div>
@@ -104,10 +104,6 @@ const feather = `${base}assets/feather.png`;
     background: var(--red);
     opacity: 0.8;
     transform: rotate(-10deg);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
   }
 
   .cdc-inner {

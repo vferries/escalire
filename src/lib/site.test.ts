@@ -74,6 +74,62 @@ describe('natural feather motion (spec 2026-07-10, v3 physics)', () => {
   });
 });
 
+describe('encres vivantes (spec 2026-07-11)', () => {
+  const css = () => read('src/styles/global.css');
+  const js = () => read('src/scripts/site.js');
+  it('adds the ink-bloom reveal: mask-position stepping through the 10-frame sprite', () => {
+    expect(js()).toContain("'ink-bloom'");
+    expect(js()).toMatch(/steps\(10, jump-none\)/);
+    expect(css()).toContain('@keyframes inkBloomIn');
+    expect(css()).toMatch(/steps\(10, jump-none\)/);
+  });
+  it('gives the inks a slow compositor-only life, killed in discret', () => {
+    expect(css()).toContain('@keyframes inkBreathe');
+    expect(css()).toMatch(/discret[^{]*\.ink-alive[\s\S]{0,200}?animation: none/);
+  });
+  it('wires the generated sprites into the sections', () => {
+    const hero = read('src/components/Hero.astro');
+    expect(hero).toContain('ink-wash-a.png');
+    expect(hero).toContain('ink-wash-b.png');
+    expect(hero).toContain('ink-accent.png');
+    expect(hero).toContain('ink-splat-hero.png');
+    expect(hero).not.toContain('assets/ink-splat.png');
+    const librairie = read('src/components/Librairie.astro');
+    expect(librairie).toContain('ink-splat-librairie.png');
+    expect(librairie).toContain('data-reveal="ink-bloom"');
+    expect(librairie).not.toContain('assets/ink-splat.png');
+    const rencontres = read('src/components/Rencontres.astro');
+    expect(rencontres).toContain('ink-splat-rencontres.png');
+    expect(rencontres).toContain('data-reveal="ink-bloom"');
+    expect(rencontres).not.toContain('assets/ink-splat.png');
+    for (const [file, sprite] of [
+      ['CoupsDeCoeur.astro', 'ink-accent-coups.png'],
+      ['Equipe.astro', 'ink-accent-equipe.png'],
+    ]) {
+      const c = read(`src/components/${file}`);
+      expect(c).toContain(sprite);
+      expect(c).toContain('data-reveal="ink-bloom"');
+      expect(c).not.toContain('assets/ink-splat.png');
+    }
+  });
+  it('commits valid production sprites', () => {
+    for (const f of [
+      'ink-wash-a.png',
+      'ink-wash-b.png',
+      'ink-splat-hero.png',
+      'ink-splat-librairie.png',
+      'ink-splat-rencontres.png',
+      'ink-accent.png',
+      'ink-accent-coups.png',
+      'ink-accent-equipe.png',
+    ]) {
+      const buf = readFileSync(root + 'public/assets/' + f);
+      expect([...buf.subarray(0, 8)]).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      expect(buf.readUInt32BE(20) / buf.readUInt32BE(16)).toBe(10); // 10-frame strip
+    }
+  });
+});
+
 describe('mentions légales (spec SP5 I3/I4)', () => {
   it('carries the exact legal identifiers', () => {
     const page = read('src/pages/mentions-legales.astro');

@@ -13,7 +13,7 @@ La maquette de référence est `design/escalire.html` (HTML standalone haute-fid
 - **Langue** : site 100 % français ; code et commits en anglais.
 - **CSS** : décliner les tokens de DESIGN.md en variables CSS (`--paper`, `--navy`…). Pas de framework UI lourd ; Tailwind acceptable si mappé sur les tokens.
 - **Animations** : IntersectionObserver + transforms/opacity uniquement (pas de layout thrash). Respecter `prefers-reduced-motion` (les plumes et animations continues se coupent). Plumes : nombreuses et légèrement transparentes (opacité ×0.6), pas de réglage utilisateur.
-- **Images** : assets de `design/assets/` à reprendre tels quels ; masques (plume, pinceau, encre, déchirure) appliqués via `mask-image` + `background-color`, jamais de bitmaps recolorés.
+- **Images** : assets de `design/assets/` à reprendre tels quels ; masques (plume, pinceau, encre, déchirure) appliqués via `mask-image` + `background-color`, jamais de bitmaps recolorés. Exception (demandée par Vincent) : les taches d'encre sont des sprites générés par `tools/gen-ink.mjs` (spec 2026-07-11) — les régénérer via le script, ne pas les retoucher à la main.
 - **Couvertures de livres** : `https://images.epagine.fr/{3 derniers chiffres ISBN}/{ISBN13}_1_75.jpg`. Pas de CORS : `<img>` direct uniquement. Prévoir un fallback typographique (carte navy/crème) si 404.
 - **Carte** : Leaflet + tuiles CARTO `light_all`, marqueur `feather.png`, scrollWheelZoom désactivé.
 - **SEO / a11y** : one-page avec vraies ancres, balises meta locales (librairie Escalquens), schema.org `Book Store` (adresse, horaires, téléphone), alt sur toutes les images, contrastes AA (attention aux Caveat sur fonds clairs).

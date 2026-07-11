@@ -6,14 +6,17 @@ const slogan = textes?.data.slogan ?? '';
 const sousTitre = textes?.data.sousTitre ?? '';
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
-const inkSplat = `${base}assets/ink-splat.png`;
+const inkWashA = `${base}assets/ink-wash-a.png`;
+const inkWashB = `${base}assets/ink-wash-b.png`;
+const inkSplatHero = `${base}assets/ink-splat-hero.png`;
+const inkAccent = `${base}assets/ink-accent.png`;
 const brushStroke = `${base}assets/brush-stroke.png`;
 ---
 <header id="accueil" class="hero">
   <h1 class="sr-only">Librairie Escalire, librairie indépendante à Escalquens</h1>
   <div id="hero-bg" aria-hidden="true" class="hero-bg">
-    <div class="hero-blob hero-blob--a"></div>
-    <div class="hero-blob hero-blob--b"></div>
+    <div class="hero-blob ink-sprite ink-bloom-load hero-blob--a" style={`-webkit-mask-image:url(${inkWashA}); mask-image:url(${inkWashA});`}></div>
+    <div class="hero-blob ink-sprite ink-bloom-load hero-blob--b" style={`-webkit-mask-image:url(${inkWashB}); mask-image:url(${inkWashB});`}></div>
     <div
       class="parallax-feather pf-1"
       data-parallax="0.07"
@@ -26,7 +29,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
       data-rot="22"
       style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
     ></div>
-    <div class="hero-splat" style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}></div>
+    <div class="hero-splat ink-sprite ink-bloom-load" style={`-webkit-mask-image:url(${inkSplatHero}); mask-image:url(${inkSplatHero});`}></div>
   </div>
 
   <div id="hero-feathers" class="hero-feathers" aria-hidden="true" data-base={base}></div>
@@ -35,8 +38,8 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     <div
       data-entrance="4"
       aria-hidden="true"
-      class="hero-splat-small"
-      style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
+      class="hero-splat-small ink-sprite ink-bloom-load"
+      style={`-webkit-mask-image:url(${inkAccent}); mask-image:url(${inkAccent});`}
     ></div>
     <img
       data-entrance="0"
@@ -81,25 +84,28 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     inset: -10%;
     pointer-events: none;
   }
+  /* big diluted ink washes (was: radial-gradient halos): they bloom at load,
+     then keep the original inkDrift as their slow life */
   .hero-blob {
     position: absolute;
-    border-radius: 50%;
   }
   .hero-blob--a {
     top: 8%;
     left: -6%;
     width: 46vw;
     height: 46vw;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 65%);
-    animation: inkDrift 16s ease-in-out infinite;
+    background: #ffffff;
+    opacity: 0.5;
+    animation: inkBloomIn 1.8s steps(10, jump-none) both, inkDrift 16s ease-in-out infinite;
   }
   .hero-blob--b {
     bottom: -4%;
     right: -8%;
     width: 52vw;
     height: 52vw;
-    background: radial-gradient(circle, rgba(43, 63, 119, 0.14), rgba(43, 63, 119, 0) 62%);
-    animation: inkDrift 20s ease-in-out infinite reverse;
+    background: var(--navy);
+    opacity: 0.12;
+    animation: inkBloomIn 2.2s steps(10, jump-none) both, inkDrift 20s ease-in-out infinite reverse;
   }
   .parallax-feather {
     position: absolute;
@@ -135,10 +141,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     background: #ffffff;
     opacity: 0.4;
     transform: rotate(24deg);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
+    animation: inkBloomIn 2s steps(10, jump-none) 0.3s both, inkBreathe 24s ease-in-out infinite;
   }
 
   .hero-feathers {
@@ -165,10 +168,8 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     background: var(--red);
     opacity: 0.85;
     transform: rotate(14deg);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
+    /* bloom lands with the entrance stagger (data-entrance 4 ≈ 560ms) */
+    animation: inkBloomIn 1.4s steps(10, jump-none) 0.56s both, inkBreathe 17s ease-in-out infinite;
   }
   .hero-logo {
     width: min(540px, 82vw);

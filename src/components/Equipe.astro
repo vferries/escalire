@@ -8,7 +8,7 @@ const members = selectCoupsDeCoeur(await getCollection('equipe'), Infinity);
 
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
-const inkSplat = `${base}assets/ink-splat.png`;
+const inkSplat = `${base}assets/ink-accent-equipe.png`;
 const brushStroke = `${base}assets/brush-stroke.png`;
 ---
 {members.length > 0 && (
@@ -21,9 +21,9 @@ const brushStroke = `${base}assets/brush-stroke.png`;
         style={`-webkit-mask-image:url(${featherMask}); mask-image:url(${featherMask});`}
       ></div>
       <div
-        data-reveal="pop"
+        data-reveal="ink-bloom"
         data-delay="300"
-        class="eq-splat"
+        class="eq-splat ink-sprite ink-alive"
         style={`-webkit-mask-image:url(${inkSplat}); mask-image:url(${inkSplat});`}
       ></div>
     </div>
@@ -102,10 +102,6 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     background: var(--coral);
     opacity: 0.7;
     transform: rotate(20deg);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
   }
 
   .eq-inner {
