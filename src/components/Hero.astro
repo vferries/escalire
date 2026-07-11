@@ -96,7 +96,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     height: 46vw;
     background: #ffffff;
     opacity: 0.5;
-    animation: inkBloomIn 1.8s steps(10, jump-none) both, inkDrift 16s ease-in-out infinite;
+    animation: inkBloomIn 1.8s steps(20, jump-none) both, inkWet 1.8s ease-out both, inkDrift 16s ease-in-out infinite;
   }
   .hero-blob--b {
     bottom: -4%;
@@ -105,7 +105,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     height: 52vw;
     background: var(--navy);
     opacity: 0.12;
-    animation: inkBloomIn 2.2s steps(10, jump-none) both, inkDrift 20s ease-in-out infinite reverse;
+    animation: inkBloomIn 2.2s steps(20, jump-none) both, inkWet 2.2s ease-out both, inkDrift 20s ease-in-out infinite reverse;
   }
   .parallax-feather {
     position: absolute;
@@ -141,7 +141,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     background: #ffffff;
     opacity: 0.4;
     transform: rotate(24deg);
-    animation: inkBloomIn 2s steps(10, jump-none) 0.3s both, inkBreathe 24s ease-in-out infinite;
+    animation: inkBloomIn 2s steps(20, jump-none) 0.3s both, inkWet 2s ease-out 0.3s both, inkBreathe 24s ease-in-out infinite;
   }
 
   .hero-feathers {
@@ -169,7 +169,7 @@ const brushStroke = `${base}assets/brush-stroke.png`;
     opacity: 0.85;
     transform: rotate(14deg);
     /* bloom lands with the entrance stagger (data-entrance 4 ≈ 560ms) */
-    animation: inkBloomIn 1.4s steps(10, jump-none) 0.56s both, inkBreathe 17s ease-in-out infinite;
+    animation: inkBloomIn 1.4s steps(20, jump-none) 0.56s both, inkWet 1.4s ease-out 0.56s both, inkBreathe 17s ease-in-out infinite;
   }
   .hero-logo {
     width: min(540px, 82vw);

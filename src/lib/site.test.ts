@@ -79,9 +79,11 @@ describe('encres vivantes (spec 2026-07-11)', () => {
   const js = () => read('src/scripts/site.js');
   it('adds the ink-bloom reveal: mask-position stepping through the 10-frame sprite', () => {
     expect(js()).toContain("'ink-bloom'");
-    expect(js()).toMatch(/steps\(10, jump-none\)/);
+    expect(js()).toMatch(/steps\(20, jump-none\)/);
     expect(css()).toContain('@keyframes inkBloomIn');
-    expect(css()).toMatch(/steps\(10, jump-none\)/);
+    expect(css()).toMatch(/steps\(20, jump-none\)/);
+    expect(css()).toMatch(/mask-size: 100% 2000%/);
+    expect(css()).toContain('@keyframes inkWet'); // wet-blur smooths the frame steps
   });
   it('gives the inks a slow compositor-only life, killed in discret', () => {
     expect(css()).toContain('@keyframes inkBreathe');
@@ -125,7 +127,7 @@ describe('encres vivantes (spec 2026-07-11)', () => {
     ]) {
       const buf = readFileSync(root + 'public/assets/' + f);
       expect([...buf.subarray(0, 8)]).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-      expect(buf.readUInt32BE(20) / buf.readUInt32BE(16)).toBe(10); // 10-frame strip
+      expect(buf.readUInt32BE(20) / buf.readUInt32BE(16)).toBe(20); // 20-frame strip
     }
   });
 });

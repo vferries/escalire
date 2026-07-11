@@ -126,6 +126,7 @@ function setupReveals() {
             // walk the sprite mask to its final frame (see .ink-sprite)
             el.style.setProperty('-webkit-mask-position', '0 100%');
             el.style.setProperty('mask-position', '0 100%');
+            el.style.filter = 'blur(0px)';
           }
         });
         io.unobserve(el);
@@ -158,10 +159,12 @@ function setupReveals() {
       el.style.transform = `${base} scaleX(0)`.trim();
     } else if (kind === 'ink-bloom') {
       // rewind the ink sprite to frame 0; the reveal steps it back to the
-      // final frame, reading as ink soaking into the paper
-      el.style.transition = `opacity .5s ${EASE} ${delay}, -webkit-mask-position 1.4s steps(10, jump-none) ${delay}, mask-position 1.4s steps(10, jump-none) ${delay}`;
+      // final frame, reading as ink soaking into the paper. The settling wet
+      // blur smooths the discrete mask steps.
+      el.style.transition = `opacity .5s ${EASE} ${delay}, -webkit-mask-position 1.4s steps(20, jump-none) ${delay}, mask-position 1.4s steps(20, jump-none) ${delay}, filter 1.4s ease-out ${delay}`;
       el.style.setProperty('-webkit-mask-position', '0 0%');
       el.style.setProperty('mask-position', '0 0%');
+      el.style.filter = 'blur(2.2px)';
     } else if (kind === 'pop') {
       el.style.transform = `${base} scale(0.3) rotate(-24deg)`.trim();
     } else if (kind === 'ink-text') {

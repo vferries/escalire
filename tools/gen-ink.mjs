@@ -190,7 +190,7 @@ const lutRadius = (lut, th) => {
 
 // Renders a vertical strip: `frames` stacked square frames of `size` px.
 // Returns straight-alpha RGBA (white ink), 2x2 subsampled per pixel.
-export function renderSprite(species, seed, { size = 768, frames = 10 } = {}) {
+export function renderSprite(species, seed, { size = 768, frames = 20 } = {}) {
   const { luts, satellites, mottleAmp } = makeBlot(species, seed, frames);
   const mottle = valueNoise2D(seed * 31 + 7);
   const half = size / 2;
