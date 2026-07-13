@@ -35,7 +35,9 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
   </button>
 </nav>
 <div id="nav-panel" class="nav-panel" role="dialog" aria-modal="true" aria-label="Menu de navigation" inert>
-  <div class="panel-wash ink-sprite" aria-hidden="true" style={`-webkit-mask-image:url(${inkWashA}); mask-image:url(${inkWashA});`}></div>
+  <div class="panel-backdrop" aria-hidden="true">
+    <div class="panel-wash ink-sprite" style={`-webkit-mask-image:url(${inkWashA}); mask-image:url(${inkWashA});`}></div>
+  </div>
   <div class="panel-feathers" aria-hidden="true" data-base={base}></div>
   <div class="panel-top">
     <a href={`${base}#accueil`} class="nav-logo">
@@ -147,6 +149,14 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
     transition: opacity 0.35s ease;
   }
 
+  /* clips decor that intentionally sits partly outside the panel bounds
+     (e.g. the ink wash below) so .nav-panel never gains scrollable overflow */
+  .panel-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
   .panel-wash {
     position: absolute;
     right: -80px;

@@ -41,6 +41,14 @@ describe('mobile burger menu — markup & styles (spec 2026-07-13, task 1)', () 
     expect(nav()).toMatch(/class="panel-wash ink-sprite"/);
     expect(nav()).not.toMatch(/body\s*\{[^}]*overflow/);
   });
+
+  it('clips the wash inside a dedicated backdrop layer so the panel never scrolls (review finding 1)', () => {
+    // .panel-wash sits partly outside the panel bounds (right:-80px; bottom:-120px);
+    // it must be wrapped in its own clipping layer, not appended to .panel-feathers
+    // (closeMenu calls replaceChildren() on that layer and would delete the wash).
+    expect(nav()).toMatch(/<div class="panel-backdrop"[^>]*>\s*<div class="panel-wash ink-sprite"/);
+    expect(nav()).toMatch(/\.panel-backdrop\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*overflow:\s*hidden;[^}]*\}/);
+  });
 });
 
 describe('mobile burger menu — behavior (spec 2026-07-13, task 2)', () => {
@@ -71,6 +79,13 @@ describe('mobile burger menu — behavior (spec 2026-07-13, task 2)', () => {
   it('never locks body scroll', () => {
     expect(js()).not.toMatch(/body\.style\.overflow/);
     expect(js()).not.toMatch(/documentElement\.style\.overflow/);
+  });
+
+  it('closes the panel when its logo link is clicked, without joining markCurrentSection (review finding 2)', () => {
+    expect(js()).toContain("panel.querySelector('.panel-top .nav-logo')");
+    expect(js()).toMatch(/logoLink\?\.addEventListener\('click', closeMenu\)/);
+    // the logo must stay out of the `links` array driving is-current
+    expect(js()).toContain("const links = Array.from(panel.querySelectorAll('.panel-links a'));");
   });
 });
 

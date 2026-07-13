@@ -370,7 +370,11 @@ function buildFeather(seed, maskUrl, { once = false } = {}) {
   );
 
   if (once) {
-    // interrupted (menu closed -> replaceChildren) rejects finished: ignore
+    // detaching `outer` (menu closed -> replaceChildren) does not cancel this
+    // animation: `finished` still resolves after delay+duration and the
+    // subsequent outer.remove() is a harmless no-op on the detached node.
+    // The catch only guards a future explicit anim.cancel(), which does
+    // reject `finished`.
     anim.finished.then(() => outer.remove()).catch(() => {});
   }
 
@@ -482,6 +486,7 @@ function setupMobileMenu() {
   if (!burger || !panel) return;
   const closeBtn = panel.querySelector('.panel-close');
   const links = Array.from(panel.querySelectorAll('.panel-links a'));
+  const logoLink = panel.querySelector('.panel-top .nav-logo');
   const featherLayer = panel.querySelector('.panel-feathers');
 
   const openMenu = () => {
@@ -505,6 +510,10 @@ function setupMobileMenu() {
   closeBtn.addEventListener('click', closeMenu);
   // closing first lets the native anchor jump happen on the revealed page
   links.forEach((a) => a.addEventListener('click', closeMenu));
+  // the panel logo links to #accueil behind the opaque panel; it must close
+  // the menu too, but stays out of `links` — markCurrentSection's is-current
+  // toggle is only for the 5 section links, not the logo
+  logoLink?.addEventListener('click', closeMenu);
 
   panel.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
