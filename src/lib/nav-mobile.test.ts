@@ -73,3 +73,29 @@ describe('mobile burger menu — behavior (spec 2026-07-13, task 2)', () => {
     expect(js()).not.toMatch(/documentElement\.style\.overflow/);
   });
 });
+
+describe('mobile burger menu — animations (spec 2026-07-13, task 3)', () => {
+  const js = () => read('src/scripts/site.js');
+  const nav = () => read('src/components/Nav.astro');
+
+  it('buildFeather supports one-shot mode and removes the node when done', () => {
+    expect(js()).toContain('function buildFeather(seed, maskUrl, { once = false } = {})');
+    expect(js()).toContain('iterations: 1');
+    expect(js()).toContain('outer.remove()');
+  });
+
+  it('spawns the burst from the baked hero seeds, skipped in discret mode', () => {
+    expect(js()).toContain('function spawnFeatherBurst(');
+    expect(js()).toMatch(/spawnFeatherBurst[\s\S]{0,200}amp\(\) === 0/);
+    expect(js()).toContain('heroSeeds.slice(0, 7)');
+  });
+
+  it('clears burst feathers when the menu closes', () => {
+    expect(js()).toMatch(/closeMenu[\s\S]{0,300}replaceChildren\(\)/);
+  });
+
+  it('staggers the link cascade and disables it in discret mode', () => {
+    expect(nav()).toContain('calc(var(--i) * 60ms');
+    expect(nav()).toMatch(/data-intensite="discret"[^{]*\{[^}]*transition: none/);
+  });
+});

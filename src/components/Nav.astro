@@ -228,6 +228,24 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
     background: var(--red);
   }
 
+  /* cascade: links rise in as the panel fades (transforms/opacity only) */
+  .panel-links a {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .nav-panel.open .panel-links a {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.5s cubic-bezier(0.22, 0.61, 0.21, 1) calc(var(--i) * 60ms + 100ms),
+      transform 0.55s cubic-bezier(0.22, 0.61, 0.21, 1) calc(var(--i) * 60ms + 100ms);
+  }
+  /* discret: no cascade, no panel fade — everything instant */
+  :root[data-intensite="discret"] .nav-panel,
+  :root[data-intensite="discret"] .panel-links a {
+    transition: none !important;
+  }
+
   .panel-decor {
     position: absolute;
     right: 26px;

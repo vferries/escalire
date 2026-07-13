@@ -344,7 +344,7 @@ function featherMaskUrl(container) {
 // animation because it is one physical motion) / flutter (3D quiver or twirl)
 // / innermost tinted mask div. Keep them separate — merging the transforms
 // breaks the independent animations (see CLAUDE.md).
-function buildFeather(seed, maskUrl) {
+function buildFeather(seed, maskUrl, { once = false } = {}) {
   const outer = document.createElement('div');
   outer.style.cssText = `position:absolute; top:0; left:${seed.left}%; will-change:transform;`;
   // amplitudes consumed by the flutter/twirl keyframes (inherited); resolved at
@@ -356,15 +356,23 @@ function buildFeather(seed, maskUrl) {
   // if the feather ever flips, every keyframe carries the perspective+rotateY
   // pair so the transform lists stay interpolation-compatible
   const flips = seed.path.some((k) => k.flip !== 0);
-  path.animate(
+  const anim = path.animate(
     seed.path.map((k) => ({
       offset: k.offset,
       transform:
         `translate(${(k.x * seed.xScale).toFixed(1)}px, ${(-24 + 148 * k.y).toFixed(2)}vh) rotate(${(k.th * seed.thScale).toFixed(1)}deg)` +
         (flips ? ` perspective(600px) rotateY(${k.flip.toFixed(1)}deg)` : ''),
     })),
-    { duration: seed.dur * 1000, iterations: Infinity, delay: -seed.phase * seed.dur * 1000 },
+    once
+      ? // burst feather: seed.phase is a stagger delay in seconds, one fall, then gone
+        { duration: seed.dur * 1000, iterations: 1, delay: seed.phase * 1000, fill: 'both' }
+      : { duration: seed.dur * 1000, iterations: Infinity, delay: -seed.phase * seed.dur * 1000 },
   );
+
+  if (once) {
+    // interrupted (menu closed -> replaceChildren) rejects finished: ignore
+    anim.finished.then(() => outer.remove()).catch(() => {});
+  }
 
   const flutter = document.createElement('div');
   flutter.style.animation = `featherFlutter ${seed.flutDur}s ease-in-out ${seed.flutDelay}s infinite`;
@@ -401,6 +409,28 @@ function fillLayer(container, seeds, count) {
     return { el: outer, depth: seed.depth };
   });
   return built;
+}
+
+// One-shot burst for the mobile menu opening: reuse the baked hero seeds
+// (physics already paid at idle time), shorter fall, fixed per-index stagger
+// so no randomness runs at open time.
+function spawnFeatherBurst(container) {
+  if (!container || amp() === 0) return;
+  ensureSeeds();
+  const maskUrl = featherMaskUrl(container);
+  heroSeeds.slice(0, 7).forEach((seed, i) => {
+    const outer = buildFeather(
+      {
+        ...seed,
+        opacity: seed.o * FEATHER_OPACITY_FACTOR,
+        dur: 4.5 + (i % 3) * 1.2,
+        phase: i * 0.13,
+      },
+      maskUrl,
+      { once: true },
+    );
+    container.appendChild(outer);
+  });
 }
 
 function rebuildFeathers() {
@@ -452,12 +482,14 @@ function setupMobileMenu() {
   if (!burger || !panel) return;
   const closeBtn = panel.querySelector('.panel-close');
   const links = Array.from(panel.querySelectorAll('.panel-links a'));
+  const featherLayer = panel.querySelector('.panel-feathers');
 
   const openMenu = () => {
     markCurrentSection(links);
     panel.inert = false;
     panel.classList.add('open');
     burger.setAttribute('aria-expanded', 'true');
+    spawnFeatherBurst(featherLayer);
     closeBtn.focus();
   };
 
@@ -465,6 +497,7 @@ function setupMobileMenu() {
     panel.classList.remove('open');
     panel.inert = true;
     burger.setAttribute('aria-expanded', 'false');
+    featherLayer.replaceChildren(); // drop in-flight burst feathers
     burger.focus({ preventScroll: true });
   };
 
