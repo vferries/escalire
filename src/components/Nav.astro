@@ -250,10 +250,11 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
       opacity 0.5s cubic-bezier(0.22, 0.61, 0.21, 1) calc(var(--i) * 60ms + 100ms),
       transform 0.55s cubic-bezier(0.22, 0.61, 0.21, 1) calc(var(--i) * 60ms + 100ms);
   }
-  /* discret: no cascade, no panel fade — everything instant */
+  /* discret: no cascade, no panel fade — everything instant
+     (same specificity as the .open rules above, later in source: wins) */
   :root[data-intensite="discret"] .nav-panel,
   :root[data-intensite="discret"] .panel-links a {
-    transition: none !important;
+    transition: none;
   }
 
   .panel-decor {
