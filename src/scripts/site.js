@@ -427,6 +427,72 @@ function rebuildFeathers() {
   }
 }
 
+// --- Mobile burger menu --------------------------------------------------------
+//
+// Full-screen cream panel (spec 2026-07-13). The panel is always in the DOM
+// (inert while closed); open/close only toggles classes + inert, never body
+// overflow (project rule — the opaque panel plus overscroll-behavior:contain
+// covers scroll containment). The current section is computed once at open
+// time from the anchor targets — cheaper than a permanent IntersectionObserver
+// for something only visible while the menu is open.
+
+function markCurrentSection(links) {
+  let current = null;
+  for (const a of links) {
+    const target = document.getElementById(a.hash.slice(1));
+    // 124px = fixed nav (84) + enough of the section actually on screen
+    if (target && target.getBoundingClientRect().top <= 124) current = a;
+  }
+  links.forEach((a) => a.classList.toggle('is-current', a === current));
+}
+
+function setupMobileMenu() {
+  const burger = document.getElementById('nav-burger');
+  const panel = document.getElementById('nav-panel');
+  if (!burger || !panel) return;
+  const closeBtn = panel.querySelector('.panel-close');
+  const links = Array.from(panel.querySelectorAll('.panel-links a'));
+
+  const openMenu = () => {
+    markCurrentSection(links);
+    panel.inert = false;
+    panel.classList.add('open');
+    burger.setAttribute('aria-expanded', 'true');
+    closeBtn.focus();
+  };
+
+  const closeMenu = () => {
+    panel.classList.remove('open');
+    panel.inert = true;
+    burger.setAttribute('aria-expanded', 'false');
+    burger.focus({ preventScroll: true });
+  };
+
+  burger.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  // closing first lets the native anchor jump happen on the revealed page
+  links.forEach((a) => a.addEventListener('click', closeMenu));
+
+  panel.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMenu();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const focusables = Array.from(panel.querySelectorAll('a, button'));
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+}
+
 // --- Init ---------------------------------------------------------------------
 
 const onScroll = setupScroll();
@@ -434,6 +500,7 @@ setupHeroEntrance();
 setupReveals();
 setupMap();
 highlightToday();
+setupMobileMenu();
 // first feather build runs the physics — defer it past first paint
 (window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1)))(rebuildFeathers);
 

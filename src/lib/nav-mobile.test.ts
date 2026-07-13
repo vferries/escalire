@@ -42,3 +42,34 @@ describe('mobile burger menu — markup & styles (spec 2026-07-13, task 1)', () 
     expect(nav()).not.toMatch(/body\s*\{[^}]*overflow/);
   });
 });
+
+describe('mobile burger menu — behavior (spec 2026-07-13, task 2)', () => {
+  const js = () => read('src/scripts/site.js');
+
+  it('defines and calls setupMobileMenu', () => {
+    expect(js()).toContain('function setupMobileMenu()');
+    expect(js()).toMatch(/^setupMobileMenu\(\);$/m);
+  });
+
+  it('closes on Escape and traps Tab inside the panel', () => {
+    expect(js()).toContain("e.key === 'Escape'");
+    expect(js()).toContain("e.key === 'Tab'");
+  });
+
+  it('syncs inert + aria-expanded with the open state', () => {
+    expect(js()).toContain('panel.inert = false');
+    expect(js()).toContain('panel.inert = true');
+    expect(js()).toContain("burger.setAttribute('aria-expanded', 'true')");
+    expect(js()).toContain("burger.setAttribute('aria-expanded', 'false')");
+  });
+
+  it('marks the current section at open time, without a permanent observer', () => {
+    expect(js()).toContain('function markCurrentSection');
+    expect(js()).toContain("classList.toggle('is-current'");
+  });
+
+  it('never locks body scroll', () => {
+    expect(js()).not.toMatch(/body\.style\.overflow/);
+    expect(js()).not.toMatch(/documentElement\.style\.overflow/);
+  });
+});
