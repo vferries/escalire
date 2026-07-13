@@ -165,3 +165,16 @@ describe('mentions légales (spec SP5 I3/I4)', () => {
     expect(read('src/pages/mentions-legales.astro')).toContain('enveille.info');
   });
 });
+
+describe('footer feather vs links (mobile audit 2026-07-13)', () => {
+  const footer = () => read('src/components/Footer.astro');
+
+  it('never intercepts taps on the links', () => {
+    expect(footer()).toMatch(/\.footer-feather\s*\{[^}]*pointer-events: none/);
+  });
+  it('shrinks into the corner below 1024px where it would cover the link row', () => {
+    expect(footer()).toMatch(
+      /@media \(max-width: 1023px\)[\s\S]{0,200}\.footer-feather/
+    );
+  });
+});

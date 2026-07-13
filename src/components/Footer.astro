@@ -45,6 +45,16 @@ const year = new Date().getFullYear();
     height: auto;
     transform: rotate(26deg);
     opacity: 0.9;
+    pointer-events: none; /* decorative: must never intercept taps on the links */
+  }
+  /* below ~1024px the centered link row runs under the feather (mockup is
+     desktop-only) — tuck a smaller one into the corner instead */
+  @media (max-width: 1023px) {
+    .footer-feather {
+      width: 96px;
+      right: -30px;
+      bottom: -44px;
+    }
   }
   .footer-inner {
     position: relative;
