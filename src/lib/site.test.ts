@@ -166,6 +166,29 @@ describe('mentions légales (spec SP5 I3/I4)', () => {
   });
 });
 
+describe('LCP element vs hero entrance (perf audit 2026-07-13)', () => {
+  it('marks the hero logo as the LCP element', () => {
+    expect(read('src/components/Hero.astro')).toMatch(
+      /<img[^>]*data-entrance="0"[^>]*data-lcp/
+    );
+  });
+  it('never hides the LCP element — transform-only entrance', () => {
+    // hiding it with opacity:0 postpones LCP until the JS fade-in completes
+    expect(read('src/scripts/site.js')).toContain("'lcp' in el.dataset");
+  });
+  it('keeps the logo light enough for the slow-4G budget', () => {
+    // 139 KB original starved the LCP request; palette-quantized to ~42 KB
+    const bytes = readFileSync(root + 'public/assets/logo-escalire.png').length;
+    expect(bytes).toBeLessThan(60_000);
+  });
+  it('does not preload the burger-panel feather decor', () => {
+    // panel is closed at load time; eager fetch competed with the LCP image
+    expect(read('src/components/Nav.astro')).toMatch(
+      /class="panel-decor"[^>]*loading="lazy"/
+    );
+  });
+});
+
 describe('footer feather vs links (mobile audit 2026-07-13)', () => {
   const footer = () => read('src/components/Footer.astro');
 

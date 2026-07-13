@@ -85,7 +85,9 @@ function setupHeroEntrance() {
     el.dataset.rvBase = base;
     el.dataset.rvOpacity = getComputedStyle(el).opacity;
     el.style.transition = 'none';
-    el.style.opacity = '0';
+    // data-lcp (hero logo): transform-only — opacity:0 would postpone the LCP
+    // paint until the JS fade-in, blowing the < 2.5s budget on throttled mobile
+    if (!('lcp' in el.dataset)) el.style.opacity = '0';
     el.style.transform = `${base} translateY(26px)`.trim();
   });
 

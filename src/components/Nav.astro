@@ -51,7 +51,7 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
       <a href={href} style={`--i:${i}`}>{label}</a>
     ))}
   </div>
-  <img class="panel-decor" src={`${base}assets/feather.png`} alt="" width="54" height="104" />
+  <img class="panel-decor" src={`${base}assets/feather.png`} alt="" width="54" height="104" loading="lazy" />
 </div>
 <style>
   #progress-bar {
