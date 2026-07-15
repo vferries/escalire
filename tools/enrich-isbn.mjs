@@ -1,5 +1,8 @@
 // Fills titre/auteur/editeur of coups de cœur from their ISBN (spec SP4).
-// Sources: BnF SRU (primary), Google Books (anonymous fallback — may 429).
+// Sources: BnF SRU (primary), Google Books (anonymous fallback — may 429),
+// then Place des Libraires JSON-LD (covers francophone publishers outside the
+// BnF legal deposit: Québec, Belgique, Suisse — and PdL is already the site's
+// ordering partner).
 // Hand-entered values always win: only missing/empty fields are filled.
 // An unresolvable ISBN leaves the file untouched (the site skips entries
 // without titre) and emits a ::warning:: annotation — exit code is always 0.
@@ -61,6 +64,32 @@ export function parseGoogleBooks(body) {
   return meta;
 }
 
+export function parsePdl(html, isbn) {
+  // JSON-LD is the page's explicit machine-readable markup — parse every
+  // block and keep the Book whose isbn matches (guards against a redirect
+  // landing on a search or error page).
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    let j;
+    try {
+      j = JSON.parse(m[1]);
+    } catch {
+      continue; // malformed block: try the next one
+    }
+    if (![].concat(j?.['@type'] ?? []).includes('Book')) continue;
+    if (!j.name || (j.isbn && j.isbn !== isbn)) continue;
+    const meta = { titre: String(j.name).trim() };
+    const auteurs = [].concat(j.author ?? [])
+      .map((a) => (typeof a === 'string' ? a : a?.name))
+      .filter(Boolean);
+    if (auteurs.length) meta.auteur = auteurs.join(', ');
+    // sic: PdL capitalizes the "Publisher" key; brand.name mirrors it
+    const editeur = j.Publisher ?? j.publisher?.name ?? j.publisher ?? j.brand?.name;
+    if (editeur && typeof editeur === 'string') meta.editeur = editeur.trim();
+    return meta;
+  }
+  return null;
+}
+
 export function applyEnrichment(md, meta, missing) {
   let out = md;
   for (const key of missing) {
@@ -91,6 +120,17 @@ async function fetchGoogle(isbn) {
   return parseGoogleBooks(await res.json());
 }
 
+async function fetchPdl(isbn) {
+  // The short URL redirects to the canonical /livre/{isbn}-{slug}/ page.
+  const url = `https://www.placedeslibraires.fr/livre/${isbn}/`;
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(15000),
+    headers: { 'User-Agent': 'escalire-enrich (+https://vferries.github.io/escalire/)' },
+  });
+  if (!res.ok) throw new Error(`Place des Libraires HTTP ${res.status}`);
+  return parsePdl(await res.text(), isbn);
+}
+
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
   for (const name of readdirSync(DIR).filter((f) => f.endsWith('.md')).sort()) {
@@ -102,7 +142,7 @@ async function main() {
     if (missing.length === 0) continue;
 
     const meta = {};
-    for (const source of [fetchBnf, fetchGoogle]) {
+    for (const source of [fetchBnf, fetchGoogle, fetchPdl]) {
       if (missing.every((k) => meta[k])) break;
       try {
         Object.assign(meta, Object.fromEntries(

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  parseFrontmatter, missingFields, parseBnf, parseGoogleBooks, applyEnrichment,
+  parseFrontmatter, missingFields, parseBnf, parseGoogleBooks, parsePdl, applyEnrichment,
 } from './enrich-isbn.mjs';
 
 // Trimmed copy of the real BnF SRU response for ISBN 9782369903086 (2026-07-10).
@@ -79,6 +79,56 @@ describe('parseGoogleBooks', () => {
   it('returns null on empty results or error payloads', () => {
     expect(parseGoogleBooks({ totalItems: 0 })).toBeNull();
     expect(parseGoogleBooks({ error: { code: 429 } })).toBeNull();
+  });
+});
+
+// Trimmed copy of the real Place des Libraires JSON-LD for ISBN 9782925416890
+// (2026-07-15) — note the capitalized "Publisher" key, sic.
+const PDL_HTML = (ld) => `<!doctype html><html><head>
+<script type="application/ld+json">${ld}</script>
+</head><body>fiche livre</body></html>`;
+
+const PDL_LD = JSON.stringify({
+  '@context': 'http://schema.org',
+  '@type': ['Book', 'Product'],
+  name: 'Les grues volent vers le sud',
+  isbn: '9782925416890',
+  author: { '@type': 'Person', name: 'Lisa Ridzén' },
+  Publisher: 'La Peuplade',
+  brand: { '@type': 'Brand', name: 'La Peuplade' },
+});
+
+describe('parsePdl', () => {
+  it('extracts titre/auteur/editeur from the real book JSON-LD', () => {
+    expect(parsePdl(PDL_HTML(PDL_LD), '9782925416890')).toEqual({
+      titre: 'Les grues volent vers le sud',
+      auteur: 'Lisa Ridzén',
+      editeur: 'La Peuplade',
+    });
+  });
+  it('joins multiple authors', () => {
+    const ld = JSON.stringify({
+      '@type': 'Book', name: 'X', isbn: '1',
+      author: [{ name: 'A. Un' }, { name: 'B. Deux' }],
+    });
+    expect(parsePdl(PDL_HTML(ld), '1').auteur).toBe('A. Un, B. Deux');
+  });
+  it('falls back to brand.name when Publisher is absent', () => {
+    const ld = JSON.stringify({ '@type': 'Book', name: 'X', isbn: '1', brand: { name: 'Éd. Y' } });
+    expect(parsePdl(PDL_HTML(ld), '1').editeur).toBe('Éd. Y');
+  });
+  it('rejects a page whose JSON-LD is for another ISBN (redirect gone wrong)', () => {
+    expect(parsePdl(PDL_HTML(PDL_LD), '9999999999999')).toBeNull();
+  });
+  it('returns null without a Book JSON-LD block or without a title', () => {
+    expect(parsePdl('<html><body>rien</body></html>', '1')).toBeNull();
+    const notBook = JSON.stringify({ '@type': 'WebSite', name: 'Place des Libraires' });
+    expect(parsePdl(PDL_HTML(notBook), '1')).toBeNull();
+    const noTitle = JSON.stringify({ '@type': 'Book', isbn: '1' });
+    expect(parsePdl(PDL_HTML(noTitle), '1')).toBeNull();
+  });
+  it('survives malformed JSON without throwing', () => {
+    expect(parsePdl(PDL_HTML('{pas du json'), '1')).toBeNull();
   });
 });
 
