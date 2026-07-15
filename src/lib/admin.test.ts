@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
-import { HORAIRE_REGEX } from './horaires';
+import { HORAIRE_CMS_PATTERN, HORAIRE_REGEX } from './horaires';
 
 const adminDir = fileURLToPath(new URL('../../public/admin/', import.meta.url));
 
@@ -80,7 +80,32 @@ describe('admin config ⇆ content.config consistency', () => {
       expect(names(jour.fields)).toEqual(['matin', 'apresMidi']);
       for (const creneau of jour.fields) {
         expect(creneau.required).toBe(false);
-        expect(creneau.pattern[0]).toBe(HORAIRE_REGEX.source);
+        // Sveltia runs `pattern` even on empty optional fields, so the CMS
+        // pattern must accept '' (closed day) on top of the strict format.
+        expect(creneau.pattern[0]).toBe(HORAIRE_CMS_PATTERN);
+      }
+    }
+  });
+
+  it('CMS hours pattern accepts closed days but stays as strict as the site schema', () => {
+    const cms = new RegExp(HORAIRE_CMS_PATTERN);
+    expect(cms.test('')).toBe(true);
+    expect(cms.test('10h00 – 12h30')).toBe(true);
+    // Sveltia stringifies a JSON null into 'null' before testing the pattern
+    expect(cms.test('null')).toBe(false);
+    expect(cms.test('10h00 - 12h30')).toBe(false); // hyphen, not en-dash
+    expect(HORAIRE_REGEX.test('10h00 – 12h30')).toBe(true);
+    expect(HORAIRE_REGEX.test('')).toBe(false);
+  });
+
+  it('stores closed days as empty strings in infos.json (null breaks Sveltia validation)', () => {
+    const infos = JSON.parse(
+      readFileSync(fileURLToPath(new URL('../content/infos.json', import.meta.url)), 'utf8')
+    );
+    for (const jour of Object.values<any>(infos.horaires)) {
+      for (const creneau of [jour.matin, jour.apresMidi]) {
+        expect(typeof creneau).toBe('string');
+        expect(new RegExp(HORAIRE_CMS_PATTERN).test(creneau)).toBe(true);
       }
     }
   });

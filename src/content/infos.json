@@ -1,12 +1,12 @@
 {
   "horaires": {
-    "lundi": { "matin": null, "apresMidi": null },
+    "lundi": { "matin": "", "apresMidi": "" },
     "mardi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
     "mercredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
     "jeudi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
     "vendredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
     "samedi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "dimanche": { "matin": null, "apresMidi": null }
+    "dimanche": { "matin": "", "apresMidi": "" }
   },
   "annonce": "",
   "telephone": "05 62 80 68 50",

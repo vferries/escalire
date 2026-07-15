@@ -201,12 +201,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: mardi
                 label: Mardi
                 widget: object
@@ -215,12 +215,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: mercredi
                 label: Mercredi
                 widget: object
@@ -229,12 +229,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: jeudi
                 label: Jeudi
                 widget: object
@@ -243,12 +243,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: vendredi
                 label: Vendredi
                 widget: object
@@ -257,12 +257,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: samedi
                 label: Samedi
                 widget: object
@@ -271,12 +271,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
               - name: dimanche
                 label: Dimanche
                 widget: object
@@ -285,12 +285,12 @@ collections:
                     label: Matin
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 10h00 – 12h30 » (espace, tiret –, espace)']
                   - name: apresMidi
                     label: Après-midi
                     widget: string
                     required: false
-                    pattern: ['^\d{2}h\d{2} – \d{2}h\d{2}$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
+                    pattern: ['^(\d{2}h\d{2} – \d{2}h\d{2})?$', 'Format : « 14h30 – 18h30 » (espace, tiret –, espace)']
           - name: annonce
             label: Annonce exceptionnelle
             widget: string

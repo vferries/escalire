@@ -3,7 +3,14 @@ export type Jour = { matin: string | null; apresMidi: string | null };
 // Single source of truth for the hours format, used both in content.config.ts
 // (Zod validation) and in horaires.test.ts. Separator is space + en-dash
 // (U+2013) + space, matching the mockup and infos.json.
-export const HORAIRE_REGEX = /^\d{2}h\d{2} – \d{2}h\d{2}$/;
+const HORAIRE_CORE = String.raw`\d{2}h\d{2} – \d{2}h\d{2}`;
+export const HORAIRE_REGEX = new RegExp(`^${HORAIRE_CORE}$`);
+
+// CMS-side variant: Sveltia tests `pattern` even on empty optional fields
+// (validateScalarField runs the regex unconditionally), so closed days must
+// match too. Empty string only — a JSON null becomes the string "null" in
+// Sveltia's draft and must keep failing loudly rather than pass silently.
+export const HORAIRE_CMS_PATTERN = `^(${HORAIRE_CORE})?$`;
 
 export const JOURS = [
   'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche',
