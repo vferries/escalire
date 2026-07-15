@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
-  parseFrontmatter, missingFields, parseBnf, parseGoogleBooks, parsePdl, applyEnrichment,
+  parseFrontmatter, missingFields, parseBnf, parseGoogleBooks,
+  parseSudocPpn, parseSudocRecord, applyEnrichment,
 } from './enrich-isbn.mjs';
 
 // Trimmed copy of the real BnF SRU response for ISBN 9782369903086 (2026-07-10).
@@ -82,53 +83,66 @@ describe('parseGoogleBooks', () => {
   });
 });
 
-// Trimmed copy of the real Place des Libraires JSON-LD for ISBN 9782925416890
-// (2026-07-15) — note the capitalized "Publisher" key, sic.
-const PDL_HTML = (ld) => `<!doctype html><html><head>
-<script type="application/ld+json">${ld}</script>
-</head><body>fiche livre</body></html>`;
+// Trimmed copies of the real SUDOC responses for ISBN 9782925416890 (2026-07-15).
+const SUDOC_PPN = `<?xml version="1.0" encoding="UTF-8"?>
+<sudoc service="isbn2ppn">
+<query><isbn>9782925416890</isbn><result><ppn>297617699</ppn></result></query></sudoc>`;
 
-const PDL_LD = JSON.stringify({
-  '@context': 'http://schema.org',
-  '@type': ['Book', 'Product'],
-  name: 'Les grues volent vers le sud',
-  isbn: '9782925416890',
-  author: { '@type': 'Person', name: 'Lisa Ridzén' },
-  Publisher: 'La Peuplade',
-  brand: { '@type': 'Brand', name: 'La Peuplade' },
+const SUDOC_PPN_ERROR = `<?xml version="1.0" encoding="UTF-8"?>
+<sudoc service="isbn2ppn"><error>Aucune notice n'est associée à cette valeur 9999999999999</error></sudoc>`;
+
+const SUDOC_RECORD = `<?xml version="1.0" encoding="UTF-8"?>
+<record>
+  <controlfield tag="001">297617699</controlfield>
+  <datafield tag="200" ind1="1" ind2="#">
+    <subfield code="a">Les grues volent vers le sud</subfield>
+    <subfield code="f">Lisa Ridzén</subfield>
+    <subfield code="g">traduit du suédois par Catherine Renaud</subfield>
+  </datafield>
+  <datafield tag="214" ind1="#" ind2="0">
+    <subfield code="a">Montréal (Québec)</subfield>
+    <subfield code="c">Éditions La Peuplade</subfield>
+    <subfield code="d">DL 2026</subfield>
+  </datafield>
+  <datafield tag="700" ind1="#" ind2="1">
+    <subfield code="a">Ridzén</subfield>
+    <subfield code="b">Lisa</subfield>
+  </datafield>
+</record>`;
+
+describe('parseSudocPpn', () => {
+  it('extracts the PPN from a hit', () => {
+    expect(parseSudocPpn(SUDOC_PPN)).toBe('297617699');
+  });
+  it('returns null on the error response', () => {
+    expect(parseSudocPpn(SUDOC_PPN_ERROR)).toBeNull();
+  });
 });
 
-describe('parsePdl', () => {
-  it('extracts titre/auteur/editeur from the real book JSON-LD', () => {
-    expect(parsePdl(PDL_HTML(PDL_LD), '9782925416890')).toEqual({
+describe('parseSudocRecord', () => {
+  it('extracts titre/auteur/editeur from the real UNIMARC record', () => {
+    expect(parseSudocRecord(SUDOC_RECORD)).toEqual({
       titre: 'Les grues volent vers le sud',
-      auteur: 'Lisa Ridzén',
-      editeur: 'La Peuplade',
+      auteur: 'Lisa Ridzén', // 200$f is already in natural order
+      editeur: 'Éditions La Peuplade',
     });
   });
-  it('joins multiple authors', () => {
-    const ld = JSON.stringify({
-      '@type': 'Book', name: 'X', isbn: '1',
-      author: [{ name: 'A. Un' }, { name: 'B. Deux' }],
-    });
-    expect(parsePdl(PDL_HTML(ld), '1').auteur).toBe('A. Un, B. Deux');
+  it('falls back to 700 $b $a when 200$f is absent', () => {
+    const xml = SUDOC_RECORD.replace('<subfield code="f">Lisa Ridzén</subfield>', '');
+    expect(parseSudocRecord(xml).auteur).toBe('Lisa Ridzén');
   });
-  it('falls back to brand.name when Publisher is absent', () => {
-    const ld = JSON.stringify({ '@type': 'Book', name: 'X', isbn: '1', brand: { name: 'Éd. Y' } });
-    expect(parsePdl(PDL_HTML(ld), '1').editeur).toBe('Éd. Y');
+  it('falls back to 210$c for older records without a 214', () => {
+    const xml = SUDOC_RECORD
+      .replace('tag="214" ind1="#" ind2="0"', 'tag="210" ind1="#" ind2="#"');
+    expect(parseSudocRecord(xml).editeur).toBe('Éditions La Peuplade');
   });
-  it('rejects a page whose JSON-LD is for another ISBN (redirect gone wrong)', () => {
-    expect(parsePdl(PDL_HTML(PDL_LD), '9999999999999')).toBeNull();
+  it('returns null without a title', () => {
+    const xml = SUDOC_RECORD.replace('<subfield code="a">Les grues volent vers le sud</subfield>', '');
+    expect(parseSudocRecord(xml)).toBeNull();
   });
-  it('returns null without a Book JSON-LD block or without a title', () => {
-    expect(parsePdl('<html><body>rien</body></html>', '1')).toBeNull();
-    const notBook = JSON.stringify({ '@type': 'WebSite', name: 'Place des Libraires' });
-    expect(parsePdl(PDL_HTML(notBook), '1')).toBeNull();
-    const noTitle = JSON.stringify({ '@type': 'Book', isbn: '1' });
-    expect(parsePdl(PDL_HTML(noTitle), '1')).toBeNull();
-  });
-  it('survives malformed JSON without throwing', () => {
-    expect(parsePdl(PDL_HTML('{pas du json'), '1')).toBeNull();
+  it('decodes XML entities in values', () => {
+    const xml = SUDOC_RECORD.replace('Les grues volent vers le sud', 'Grues &amp; brumes');
+    expect(parseSudocRecord(xml).titre).toBe('Grues & brumes');
   });
 });
 

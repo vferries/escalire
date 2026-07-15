@@ -1,8 +1,8 @@
 // Fills titre/auteur/editeur of coups de cœur from their ISBN (spec SP4).
-// Sources: BnF SRU (primary), Google Books (anonymous fallback — may 429),
-// then Place des Libraires JSON-LD (covers francophone publishers outside the
-// BnF legal deposit: Québec, Belgique, Suisse — and PdL is already the site's
-// ordering partner).
+// Sources: BnF SRU (primary), SUDOC/ABES (francophone publishers outside the
+// BnF legal deposit: Québec, Belgique, Suisse), Google Books (anonymous last
+// resort — chronically 429 from shared CI IPs). Place des Libraires was tried
+// and reverted: its WAF 403s GitHub runners even though it works locally.
 // Hand-entered values always win: only missing/empty fields are filled.
 // An unresolvable ISBN leaves the file untouched (the site skips entries
 // without titre) and emits a ::warning:: annotation — exit code is always 0.
@@ -64,30 +64,33 @@ export function parseGoogleBooks(body) {
   return meta;
 }
 
-export function parsePdl(html, isbn) {
-  // JSON-LD is the page's explicit machine-readable markup — parse every
-  // block and keep the Book whose isbn matches (guards against a redirect
-  // landing on a search or error page).
-  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
-    let j;
-    try {
-      j = JSON.parse(m[1]);
-    } catch {
-      continue; // malformed block: try the next one
-    }
-    if (![].concat(j?.['@type'] ?? []).includes('Book')) continue;
-    if (!j.name || (j.isbn && j.isbn !== isbn)) continue;
-    const meta = { titre: String(j.name).trim() };
-    const auteurs = [].concat(j.author ?? [])
-      .map((a) => (typeof a === 'string' ? a : a?.name))
-      .filter(Boolean);
-    if (auteurs.length) meta.auteur = auteurs.join(', ');
-    // sic: PdL capitalizes the "Publisher" key; brand.name mirrors it
-    const editeur = j.Publisher ?? j.publisher?.name ?? j.publisher ?? j.brand?.name;
-    if (editeur && typeof editeur === 'string') meta.editeur = editeur.trim();
-    return meta;
+export function parseSudocPpn(xml) {
+  return xml.match(/<ppn>(\d+X?)<\/ppn>/)?.[1] ?? null;
+}
+
+export function parseSudocRecord(xml) {
+  // UNIMARC: 200$a title, 200$f statement of responsibility (natural order),
+  // 700 $b/$a author fallback, 214$c publisher (210$c on older records).
+  const field = (tag) =>
+    xml.match(new RegExp(`<datafield tag="${tag}"[^>]*>([\\s\\S]*?)</datafield>`))?.[1];
+  const sub = (block, code) =>
+    block?.match(new RegExp(`<subfield code="${code}">([^<]+)</subfield>`))?.[1];
+  const f200 = field('200');
+  const titre = sub(f200, 'a');
+  if (!titre) return null;
+  const meta = { titre: decodeXml(titre).trim() };
+  const auteur = sub(f200, 'f');
+  if (auteur) {
+    meta.auteur = decodeXml(auteur).trim();
+  } else {
+    const f700 = field('700');
+    const nom = sub(f700, 'a');
+    const prenom = sub(f700, 'b');
+    if (nom) meta.auteur = decodeXml(prenom ? `${prenom} ${nom}` : nom).trim();
   }
-  return null;
+  const editeur = sub(field('214'), 'c') ?? sub(field('210'), 'c');
+  if (editeur) meta.editeur = decodeXml(editeur).trim();
+  return meta;
 }
 
 export function applyEnrichment(md, meta, missing) {
@@ -120,15 +123,16 @@ async function fetchGoogle(isbn) {
   return parseGoogleBooks(await res.json());
 }
 
-async function fetchPdl(isbn) {
-  // The short URL redirects to the canonical /livre/{isbn}-{slug}/ page.
-  const url = `https://www.placedeslibraires.fr/livre/${isbn}/`;
-  const res = await fetch(url, {
-    signal: AbortSignal.timeout(15000),
-    headers: { 'User-Agent': 'escalire-enrich (+https://vferries.github.io/escalire/)' },
-  });
-  if (!res.ok) throw new Error(`Place des Libraires HTTP ${res.status}`);
-  return parsePdl(await res.text(), isbn);
+async function fetchSudoc(isbn) {
+  const opts = { signal: AbortSignal.timeout(15000) };
+  const ppnRes = await fetch(`https://www.sudoc.fr/services/isbn2ppn/${isbn}`, opts);
+  if (ppnRes.status === 404) return null; // ISBN absent du catalogue — pas une erreur
+  if (!ppnRes.ok) throw new Error(`SUDOC isbn2ppn HTTP ${ppnRes.status}`);
+  const ppn = parseSudocPpn(await ppnRes.text());
+  if (!ppn) return null;
+  const recRes = await fetch(`https://www.sudoc.fr/${ppn}.xml`, opts);
+  if (!recRes.ok) throw new Error(`SUDOC notice HTTP ${recRes.status}`);
+  return parseSudocRecord(await recRes.text());
 }
 
 async function main() {
@@ -142,7 +146,7 @@ async function main() {
     if (missing.length === 0) continue;
 
     const meta = {};
-    for (const source of [fetchBnf, fetchGoogle, fetchPdl]) {
+    for (const source of [fetchBnf, fetchSudoc, fetchGoogle]) {
       if (missing.every((k) => meta[k])) break;
       try {
         Object.assign(meta, Object.fromEntries(
@@ -155,7 +159,7 @@ async function main() {
 
     const filled = missing.filter((k) => meta[k]);
     if (missing.includes('titre') && !meta.titre) {
-      warn(path, `ISBN ${fields.isbn13} introuvable (BnF + Google Books) — fiche non publiée tant que le titre manque.`);
+      warn(path, `ISBN ${fields.isbn13} introuvable (BnF + SUDOC + Google Books) — fiche non publiée tant que le titre manque.`);
     }
     if (filled.length === 0) continue;
     console.log(`${path}: filled ${filled.join(', ')} (ISBN ${fields.isbn13})${dryRun ? ' [dry-run]' : ''}`);
