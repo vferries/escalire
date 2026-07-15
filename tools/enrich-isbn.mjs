@@ -153,7 +153,10 @@ async function main() {
           Object.entries((await source(fields.isbn13)) ?? {}).filter(([k, v]) => v && !meta[k])
         ));
       } catch (e) {
-        console.log(`::notice file=${path}::${source.name} failed for ISBN ${fields.isbn13}: ${e.message}`);
+        // Node's fetch hides the network errno behind a generic "fetch
+        // failed" — surface e.cause so CI annotations stay diagnosable.
+        const detail = e.cause ? `${e.message} (${e.cause.code ?? e.cause.message})` : e.message;
+        console.log(`::notice file=${path}::${source.name} failed for ISBN ${fields.isbn13}: ${detail}`);
       }
     }
 
