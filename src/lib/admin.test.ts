@@ -98,12 +98,16 @@ describe('admin config ⇆ content.config consistency', () => {
     expect(HORAIRE_REGEX.test('')).toBe(false);
   });
 
-  it('stores closed days as empty strings in infos.json (null breaks Sveltia validation)', () => {
+  it('never stores null hours in infos.json (null breaks Sveltia validation)', () => {
+    // Closed days/slots are either omitted (Sveltia omit_empty_optional_fields)
+    // or empty strings — both fine. A null would become the string 'null' in
+    // Sveltia's draft and block every save of the infos entry again.
     const infos = JSON.parse(
       readFileSync(fileURLToPath(new URL('../content/infos.json', import.meta.url)), 'utf8')
     );
     for (const jour of Object.values<any>(infos.horaires)) {
       for (const creneau of [jour.matin, jour.apresMidi]) {
+        if (creneau === undefined) continue;
         expect(typeof creneau).toBe('string');
         expect(new RegExp(HORAIRE_CMS_PATTERN).test(creneau)).toBe(true);
       }

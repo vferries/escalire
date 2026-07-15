@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'astro/zod';
-import { cmsOptional, cmsOptionalUrl, horaireSlot } from './cmsFields';
+import { cmsOptional, cmsOptionalUrl, horaireSlot, jourSchema } from './cmsFields';
 
 describe('cmsOptional', () => {
   const schema = cmsOptional(z.string().max(5));
@@ -51,5 +51,25 @@ describe('horaireSlot', () => {
   });
   it('treats a missing key inside an object schema as « fermé »', () => {
     expect(z.object({ matin: horaireSlot }).parse({})).toEqual({ matin: null });
+  });
+});
+
+describe('jourSchema', () => {
+  const ferme = { matin: null, apresMidi: null };
+  it('keeps a full day', () => {
+    expect(jourSchema.parse({ matin: '10h00 – 12h30', apresMidi: '14h30 – 18h30' }))
+      .toEqual({ matin: '10h00 – 12h30', apresMidi: '14h30 – 18h30' });
+  });
+  it('fills missing slots within a day', () => {
+    expect(jourSchema.parse({ apresMidi: '14h30 – 18h30' }))
+      .toEqual({ matin: null, apresMidi: '14h30 – 18h30' });
+  });
+  // Sveltia's omit_empty_optional_fields drops a fully-empty day object
+  // altogether — this is what broke the CI build after the first admin save.
+  it('treats a missing day inside an object schema as « fermé »', () => {
+    expect(z.object({ lundi: jourSchema }).parse({})).toEqual({ lundi: ferme });
+  });
+  it('treats a bare null day as « fermé »', () => {
+    expect(jourSchema.parse(null)).toEqual(ferme);
   });
 });

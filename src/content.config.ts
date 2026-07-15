@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
-import { cmsOptional, cmsOptionalUrl, horaireSlot } from './lib/cmsFields';
+import { cmsOptional, cmsOptionalUrl, jourSchema } from './lib/cmsFields';
 
 const evenements = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/evenements' }),
@@ -42,7 +42,7 @@ const equipe = defineCollection({
   }),
 });
 
-const jour = z.object({ matin: horaireSlot, apresMidi: horaireSlot });
+const jour = jourSchema;
 
 // Plain-object JSON (editable as a CMS file collection); the parser restores
 // the single-entry array shape Astro's file loader expects.

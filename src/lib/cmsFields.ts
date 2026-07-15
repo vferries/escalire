@@ -36,3 +36,15 @@ export const horaireSlot = z
   ])
   .optional()
   .transform((v) => (v ? v : null));
+
+/**
+ * One day of opening hours. Sveltia's `omit_empty_optional_fields` drops a
+ * fully-empty day object from infos.json, so a missing (or null) day must
+ * parse as « fermé » instead of failing the build. Same zod v4 caveat again:
+ * `.nullish()` wraps with ZodOptional outermost, which is what makes the
+ * day key itself optional.
+ */
+export const jourSchema = z
+  .object({ matin: horaireSlot, apresMidi: horaireSlot })
+  .nullish()
+  .transform((v) => v ?? { matin: null, apresMidi: null });
