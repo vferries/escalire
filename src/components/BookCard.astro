@@ -58,7 +58,9 @@ const cover = d.couverture ? `${base}${d.couverture.replace(/^\//, '')}` : epagi
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: cover;
+    /* Epagine covers have no single ratio (0.64–0.74 measured, squares
+       possible for albums jeunesse) : show them whole on the card paper. */
+    object-fit: contain;
     border-radius: 4px;
   }
   .cover-fallback {
