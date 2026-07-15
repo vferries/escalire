@@ -29,6 +29,8 @@ jobs:
       - run: npm ci
       # SP4: fill titre/auteur/editeur from the ISBN before building
       - run: node tools/enrich-isbn.mjs
+        env:
+          GOOGLE_BOOKS_KEY: ${{ secrets.GOOGLE_BOOKS_KEY }}
       - run: npm test
       - run: npm run build
       - name: Commit enriched metadata (bot)

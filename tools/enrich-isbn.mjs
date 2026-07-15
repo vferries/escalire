@@ -1,8 +1,9 @@
 // Fills titre/auteur/editeur of coups de cœur from their ISBN (spec SP4).
-// Sources: BnF SRU (primary), SUDOC/ABES (francophone publishers outside the
-// BnF legal deposit: Québec, Belgique, Suisse), Google Books (anonymous last
-// resort — chronically 429 from shared CI IPs). Place des Libraires was tried
-// and reverted: its WAF 403s GitHub runners even though it works locally.
+// Sources: BnF SRU (primary), Google Books (needs the GOOGLE_BOOKS_KEY
+// secret — anonymous quota is permanently exhausted), then SUDOC/ABES
+// (francophone publishers outside the BnF legal deposit; works locally but
+// Renater silently drops GitHub-runner IPs, hence last). Place des Libraires
+// was tried and reverted: its WAF 403s GitHub runners.
 // Hand-entered values always win: only missing/empty fields are filled.
 // An unresolvable ISBN leaves the file untouched (the site skips entries
 // without titre) and emits a ::warning:: annotation — exit code is always 0.
@@ -117,7 +118,12 @@ async function fetchBnf(isbn) {
 }
 
 async function fetchGoogle(isbn) {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&country=FR`;
+  // Anonymous calls are billed to a shared Google project whose daily quota
+  // is permanently exhausted (429 everywhere) — a per-repo API key via the
+  // GOOGLE_BOOKS_KEY secret gets its own quota. country=FR also avoids the
+  // "cannot determine user location" error on datacenter IPs.
+  const key = process.env.GOOGLE_BOOKS_KEY;
+  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&country=FR${key ? `&key=${key}` : ''}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Google Books HTTP ${res.status}`);
   return parseGoogleBooks(await res.json());
@@ -146,7 +152,7 @@ async function main() {
     if (missing.length === 0) continue;
 
     const meta = {};
-    for (const source of [fetchBnf, fetchSudoc, fetchGoogle]) {
+    for (const source of [fetchBnf, fetchGoogle, fetchSudoc]) {
       if (missing.every((k) => meta[k])) break;
       try {
         Object.assign(meta, Object.fromEntries(
