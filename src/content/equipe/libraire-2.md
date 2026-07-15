@@ -1,6 +1,6 @@
 ---
 prenom: Stagiaire
 rayon: Littérature jeunesse
-visible: true
+visible: false
 ordre: 2
 ---
