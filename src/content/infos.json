@@ -1,18 +1,35 @@
 {
   "horaires": {
-    "lundi": { "matin": "", "apresMidi": "" },
-    "mardi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "mercredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "jeudi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "vendredi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "samedi": { "matin": "10h00 – 12h30", "apresMidi": "14h30 – 18h30" },
-    "dimanche": { "matin": "", "apresMidi": "" }
+    "mardi": {
+      "matin": "10h00 – 12h30",
+      "apresMidi": "14h30 – 18h30"
+    },
+    "mercredi": {
+      "matin": "10h00 – 12h30",
+      "apresMidi": "14h30 – 18h30"
+    },
+    "jeudi": {
+      "matin": "10h00 – 12h30",
+      "apresMidi": "14h30 – 18h30"
+    },
+    "vendredi": {
+      "matin": "10h00 – 12h30",
+      "apresMidi": "14h30 – 18h30"
+    },
+    "samedi": {
+      "matin": "10h00 – 12h30",
+      "apresMidi": "14h30 – 18h30"
+    }
   },
-  "annonce": "",
+  "annonce": "Votre librairie sera fermée pour congés du mardi 21 juillet au samedi 15 août inclus. Bel été à toutes et à tous !",
   "telephone": "05 62 80 68 50",
   "email": "contact@escalire.fr",
   "adresse": {
-    "lignes": ["Centre Commercial Espace 61", "61 avenue de Toulouse", "31750 Escalquens"],
+    "lignes": [
+      "Centre Commercial Espace 61",
+      "61 avenue de Toulouse",
+      "31750 Escalquens"
+    ],
     "lat": 43.5155,
     "lng": 1.5487
   },
