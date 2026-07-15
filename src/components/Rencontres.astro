@@ -292,16 +292,18 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
   .polaroid-link {
     display: block;
   }
+  /* Les affiches sont des visuels Instagram carrés : fenêtre 1:1 pour les
+     montrer entières (le 490px de la maquette venait d'un placeholder). */
   .polaroid img {
     width: 100%;
-    height: 490px;
+    aspect-ratio: 1;
     display: block;
     object-fit: cover;
     border-radius: 3px;
   }
   .polaroid-fallback {
     width: 100%;
-    height: 490px;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
