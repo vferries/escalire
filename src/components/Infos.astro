@@ -84,8 +84,8 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
         <div class="savoir">
           <p><span class="savoir-dot" style="background: var(--red);"></span>Pass Culture, Carte Jeune Occitanie, chèques lire &amp; culture acceptés</p>
           <p><span class="savoir-dot" style="background: var(--navy);"></span>Chèques cadeaux — le livre s'offre bien</p>
-          <p><span class="savoir-dot" style="background: var(--blue-light);"></span>Scolaire &amp; parascolaire, prise de commandes</p>
-          <p><span class="savoir-dot" style="background: var(--coral);"></span>Commandes en ligne — livre réservé, on vous prévient dès qu'il arrive</p>
+          <p><span class="savoir-dot" style="background: var(--coral);"></span><span>Commandes en ligne sur <a href="https://www.librairies-occitanie.com/magasins/escalquens/Escalire-6038/" target="_blank" rel="noopener" class="savoir-link">Alido</a> — livre réservé, on vous prévient dès qu'il arrive</span></p>
+          <p><span class="savoir-dot" style="background: var(--blue);"></span><span>Le <a href="https://sol-violette.fr/" target="_blank" rel="noopener" class="savoir-link">Sol-Violette</a>, monnaie locale toulousaine, est accepté</span></p>
         </div>
         <a href={placeDesLibraires} target="_blank" rel="noopener" class="pill-dark">Commander sur Place des Libraires</a>
       </div>
@@ -280,6 +280,12 @@ const itineraire = 'https://www.google.com/maps?q=61+avenue+de+Toulouse+31750+Es
     display: flex;
     gap: 10px;
   }
+  .savoir-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .savoir-link:hover { color: var(--red-ink); }
   .savoir-dot {
     width: 8px;
     height: 8px;
