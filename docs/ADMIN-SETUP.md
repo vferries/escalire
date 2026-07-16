@@ -70,7 +70,7 @@ Commit + push : le déploiement GitHub Pages suit (< 5 min).
 | Prénom | Compte GitHub | Rôle | 2FA | Invité le |
 |---|---|---|---|---|
 | Vincent | `vferries` | owner | oui | — |
-| _à compléter_ | | Write | | |
+| Anne-Sophie | `Escalire` | Write | oui | 2026-07-15 |
 
 Écart assumé (spec S4) : auth par comptes GitHub et non par magic link
 (ADMIN.md § Utilisateurs) — pas de backend d'auth possible à budget 0.
