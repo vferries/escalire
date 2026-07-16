@@ -13,8 +13,8 @@ const hasEquipe = selectCoupsDeCoeur(await getCollection('equipe'), Infinity).le
 
 const allLinks: [string, string, boolean][] = [
   [`${base}#librairie`, 'La librairie', true],
-  [`${base}#coups-de-coeur`, 'Coups de cœur', hasCoupsDeCoeur],
   [`${base}#evenements`, 'Rencontres', true],
+  [`${base}#coups-de-coeur`, 'Coups de cœur', hasCoupsDeCoeur],
   [`${base}#equipe`, "L'équipe", hasEquipe],
   [`${base}#infos`, 'Horaires & accès', true],
 ];
