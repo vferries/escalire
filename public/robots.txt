@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /escalire/admin/
+Disallow: /admin/
 
-Sitemap: https://vferries.github.io/escalire/sitemap.xml
+Sitemap: https://escalire.fr/sitemap.xml

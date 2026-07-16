@@ -148,7 +148,7 @@ describe('mentions légales (spec SP5 I3/I4)', () => {
   });
   it('is listed in the sitemap', () => {
     expect(read('public/sitemap.xml')).toContain(
-      'https://vferries.github.io/escalire/mentions-legales/'
+      'https://escalire.fr/mentions-legales/'
     );
   });
   it('nav anchors are base-absolute so they work from subpages', () => {

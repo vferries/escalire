@@ -9,8 +9,8 @@ backend:
   # sveltia-cms-auth Cloudflare Worker (docs/ADMIN-SETUP.md § 2)
   base_url: https://sveltia-cms-auth.vincent-ferries.workers.dev
 
-site_url: https://vferries.github.io/escalire/
-display_url: https://vferries.github.io/escalire/
+site_url: https://escalire.fr/
+display_url: https://escalire.fr/
 
 media_folder: public/uploads
 public_folder: /uploads
