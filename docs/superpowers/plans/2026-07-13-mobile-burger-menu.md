@@ -1,5 +1,7 @@
 # Mobile Burger Menu Implementation Plan
 
+> **Status: COMPLETE (2026-07-13).** Shipped in commits `a4ec345`, `a8ee1cf`, `882e99d` + fix wave `65d73ea`; final review APPROVED, 111/111 tests; merged to `main`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the ≤720px horizontally scrollable nav strip with a burger button opening a full-screen cream panel (validated mockup: `docs/superpowers/specs/2026-07-13-mobile-burger-menu-mockup.png`), with a one-shot feather burst on open.
@@ -35,7 +37,7 @@
   - `<button id="nav-burger" aria-expanded="false" aria-controls="nav-panel">`
   - `<div id="nav-panel" class="nav-panel" role="dialog" aria-modal="true" inert>` containing `.panel-close` (button), `.panel-links a` (anchor list, each with inline `--i` custom property), `.panel-feathers` (empty burst container with `data-base` attribute), CSS classes `.open` (panel visible) and `.is-current` (highlighted link).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `src/lib/nav-mobile.test.ts`:
 
@@ -86,12 +88,12 @@ describe('mobile burger menu — markup & styles (spec 2026-07-13, task 1)', () 
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test -- run src/lib/nav-mobile.test.ts`
 Expected: FAIL — burger/panel assertions unmatched (Nav.astro still has the strip).
 
-- [ ] **Step 3: Implement the markup**
+- [x] **Step 3: Implement the markup**
 
 In `src/components/Nav.astro`:
 
@@ -131,7 +133,7 @@ const inkWashA = `${base}assets/ink-wash-a.png`;
 </div>
 ```
 
-- [ ] **Step 4: Implement the styles**
+- [x] **Step 4: Implement the styles**
 
 In the same file's `<style>` block:
 
@@ -283,12 +285,12 @@ In the same file's `<style>` block:
 
 Note: `.nav-cta` styles stay (desktop strip still uses them); the panel renders all links plain, per Vincent's feedback.
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test -- run src/lib/nav-mobile.test.ts`
 Expected: PASS (6 tests). Also run the full suite once: `npm test` — no regressions (site.test.ts asserts on Nav.astro/site.js sources).
 
-- [ ] **Step 6: Build + visual check (closed state)**
+- [x] **Step 6: Build + visual check (closed state)**
 
 ```bash
 export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm run build && npm run preview -- --port 4322 &
@@ -312,7 +314,7 @@ await browser.close();
 
 Expected: mobile shows logo + burger (no strip, no panel); desktop nav identical to before (links + pill CTA, no burger).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/components/Nav.astro src/lib/nav-mobile.test.ts
@@ -331,7 +333,7 @@ git commit -m "feat: mobile burger button and full-screen nav panel markup"
 - Consumes (Task 1): `#nav-burger`, `#nav-panel`, `.panel-close`, `.panel-links a`, classes `.open` / `.is-current`.
 - Produces: `setupMobileMenu()` defined and called in the init section; an internal `openMenu()` that Task 3's burst hooks into (the feather spawn call is added inside `openMenu` in Task 3).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `src/lib/nav-mobile.test.ts`:
 
@@ -368,12 +370,12 @@ describe('mobile burger menu — behavior (spec 2026-07-13, task 2)', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test -- run src/lib/nav-mobile.test.ts`
 Expected: FAIL — the 5 new tests (setupMobileMenu does not exist yet).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `src/scripts/site.js`, add a new section before `// --- Init ---`:
 
@@ -451,12 +453,12 @@ And in the init section, after `highlightToday();`:
 setupMobileMenu();
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test`
 Expected: PASS, full suite green.
 
-- [ ] **Step 5: Interactive visual check**
+- [x] **Step 5: Interactive visual check**
 
 Rebuild + preview as in Task 1 Step 6, then:
 
@@ -487,7 +489,7 @@ await browser.close();
 
 READ `nav-mobile-open.png`: panel matches the mockup, « Rencontres » is navy with the red dash. Compare against `docs/superpowers/specs/2026-07-13-mobile-burger-menu-mockup.png`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/scripts/site.js src/lib/nav-mobile.test.ts
@@ -506,7 +508,7 @@ git commit -m "feat: burger panel open/close with focus trap and current-section
 - Consumes: `openMenu`/`closeMenu` from Task 2, `.panel-feathers` container from Task 1, existing `ensureSeeds()`, `heroSeeds`, `buildFeather(seed, maskUrl)`, `featherMaskUrl(container)`, `FEATHER_OPACITY_FACTOR`, `amp()`.
 - Produces: `buildFeather(seed, maskUrl, { once })` (backward compatible — existing `fillLayer` call is untouched); `spawnFeatherBurst(container)`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `src/lib/nav-mobile.test.ts`:
 
@@ -538,12 +540,12 @@ describe('mobile burger menu — animations (spec 2026-07-13, task 3)', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test -- run src/lib/nav-mobile.test.ts`
 Expected: FAIL — the 4 new tests.
 
-- [ ] **Step 3: Implement the JS**
+- [x] **Step 3: Implement the JS**
 
 3a. In `src/scripts/site.js`, change `buildFeather`'s signature and animation call. The signature becomes:
 
@@ -615,7 +617,7 @@ In `closeMenu`, after `burger.setAttribute('aria-expanded', 'false');`:
     featherLayer.replaceChildren(); // drop in-flight burst feathers
 ```
 
-- [ ] **Step 4: Implement the cascade CSS**
+- [x] **Step 4: Implement the cascade CSS**
 
 In `src/components/Nav.astro` styles, after the `.panel-links a.is-current::after` rule:
 
@@ -641,12 +643,12 @@ In `src/components/Nav.astro` styles, after the `.panel-links a.is-current::afte
 
 (The duplicate `.panel-links a` selector is intentional: base rules earlier, animation state here — keep them adjacent to the `.open` rule they pair with. `data-intensite` is set from `prefers-reduced-motion` in `Base.astro`/`site.js`, so this also covers OS reduced motion.)
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test`
 Expected: PASS, full suite green (site.test.ts's feather assertions still match — `buildFeather` body is extended, not rewritten).
 
-- [ ] **Step 6: Visual check (burst + cascade + reduced motion)**
+- [x] **Step 6: Visual check (burst + cascade + reduced motion)**
 
 Rebuild + preview, then:
 
@@ -676,7 +678,7 @@ await browser.close();
 
 READ `nav-burst-mid.png` (feathers visible over the panel) and `nav-open-reduced-motion.png` (panel fully readable, no feathers).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/scripts/site.js src/components/Nav.astro src/lib/nav-mobile.test.ts
@@ -692,12 +694,12 @@ git commit -m "feat: feather burst and link cascade on menu open, cut in reduced
 
 **Interfaces:** none — this task gates the branch.
 
-- [ ] **Step 1: Full test suite**
+- [x] **Step 1: Full test suite**
 
 Run: `export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH" && npm test`
 Expected: PASS, zero failures.
 
-- [ ] **Step 2: Desktop non-regression vs main**
+- [x] **Step 2: Desktop non-regression vs main**
 
 Save this as `shoot-desktop.mjs` in the scratchpad (`SUFFIX` distinguishes the two runs):
 
@@ -730,7 +732,7 @@ compare -metric AE nav-desktop-main.png nav-desktop-branch.png /dev/null
 
 Expected: pixel difference 0 (or trivially small anti-aliasing noise; READ both images if non-zero and judge).
 
-- [ ] **Step 3: Keyboard pass (playwright)**
+- [x] **Step 3: Keyboard pass (playwright)**
 
 ```js
 import { chromium } from '/home/vincent/projects/kiddo/node_modules/playwright/index.mjs';
@@ -759,11 +761,11 @@ console.log({ afterOpen, inPanel, afterClose });
 await browser.close();
 ```
 
-- [ ] **Step 4: Mobile screenshot set for Vincent**
+- [x] **Step 4: Mobile screenshot set for Vincent**
 
 Produce and READ: `nav-mobile-closed.png`, `nav-mobile-open.png` (compare to the spec mockup), `nav-burst-mid.png`, `nav-open-reduced-motion.png`. Copy them to the scratchpad and list the paths in the final report.
 
-- [ ] **Step 5: Verify git state**
+- [x] **Step 5: Verify git state**
 
 ```bash
 git status --short && git log --oneline main..HEAD

@@ -35,6 +35,33 @@ Le déploiement est automatisé par le workflow GitHub Actions `.github/workflow
 - **Fichier du workflow** : https://github.com/vferries/escalire/blob/main/.github/workflows/deploy.yml
 - GitHub désactive le cron des workflows après 60 jours sans activité sur un dépôt public — le réactiver depuis l'onglet Actions ; tout commit le réarme.
 
+### Bascule DNS escalire.fr
+
+État constaté le 2026-07-16 (zone OVH, NS `ns102.ovh.net`) :
+
+| Enregistrement | Valeur actuelle | Rôle |
+|---|---|---|
+| `escalire.fr` A | `213.186.33.87` | ancien site (mutualisé OVH) — à remplacer |
+| `www` CNAME | `escalire.fr.` | à repointer |
+| MX | `mx1.ovh.net`, `mx2.ovh.net`, `mxb.ovh.net` | email OVH — **ne pas toucher** |
+| TXT (SPF) | `v=spf1 include:mx.ovh.com ~all` | email — **ne pas toucher** |
+
+L'email `contact@escalire.fr` est hébergé chez OVH via les MX ci-dessus : la bascule ne modifie que A/AAAA/CNAME web, l'email n'est pas impacté tant que MX et TXT restent en place.
+
+Ordre des opérations :
+
+1. **GitHub — vérifier le domaine** (anti-takeover) : profil → Settings → Pages → Verified domains → Add `escalire.fr` ; ajouter le TXT `_github-pages-challenge-vferries` fourni, dans la zone OVH.
+2. **GitHub — déclarer le domaine** : repo `escalire` → Settings → Pages → Custom domain : `escalire.fr` → Save. (Déploiement via Actions : pas de fichier `CNAME` à commiter, le réglage Settings suffit.)
+3. **OVH — zone DNS** (manager.ovh.com → Domaines → escalire.fr → Zone DNS) :
+   - Remplacer le A de l'apex par les 4 IP GitHub Pages : `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` ; optionnel, AAAA : `2606:50c0:8000::153` à `2606:50c0:8003::153`.
+   - Repointer le CNAME `www` vers `vferries.github.io.`
+4. **Attendre la propagation** (`dig +short escalire.fr` doit renvoyer les IP 185.199.x), puis dans Settings → Pages : vérifier « DNS check successful » et cocher **Enforce HTTPS** dès que le certificat est émis (quelques minutes à ~1 h).
+5. **Adapter le site** : dérouler la case « Bascule escalire.fr » de la checklist ci-dessus (`astro.config` `site: 'https://escalire.fr'` + `base: '/'`, `config.yml`, `ALLOWED_DOMAINS` du Worker OAuth, robots.txt/sitemap), merger → le déploiement suit.
+6. **Vérifier** : page servie sur https://escalire.fr (l'ancienne URL `vferries.github.io/escalire/` redirige d'elle-même), admin fonctionnel (login OAuth), couvertures epagine OK, et **envoyer un mail test à `contact@escalire.fr`**.
+7. **Redirections anciennes URLs** : GitHub Pages ne fait pas de 301 serveur — créer une page `public/MentionsLegales.html` avec meta refresh + `rel=canonical` vers `/mentions-legales/` (cf. checklist).
+
+Rollback : remettre le A de l'apex sur `213.186.33.87` et le CNAME `www` sur `escalire.fr.` — l'ancien hébergement resservira le site dès expiration du TTL.
+
 ### Baseline Lighthouse
 
 Mesure locale (`astro preview`, 2026-07-09) : a11y 1.00 / seo 1.00 / best-practices 1.00 / perf 0.88 — le score perf est pénalisé par le serveur de preview en HTTP/1.1 (en run non throttlé : perf 1.00, LCP ~40 ms). À re-tester sur https://vferries.github.io/escalire/ après merge, avant de cocher la case « Test Lighthouse » de la checklist ci-dessus.
