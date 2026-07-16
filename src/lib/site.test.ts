@@ -135,7 +135,7 @@ describe('encres vivantes (spec 2026-07-11)', () => {
 describe('mentions légales (spec SP5 I3/I4)', () => {
   it('carries the exact legal identifiers', () => {
     const page = read('src/pages/mentions-legales.astro');
-    expect(page).toContain('EURL Librairie Escalire');
+    expect(page).toContain('SARL Librairie Escalire');
     expect(page).toContain('752 566 893 00018');
     expect(page).toContain('Anne-Sophie Delage');
     expect(page).toContain('GitHub'); // hébergeur
