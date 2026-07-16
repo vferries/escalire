@@ -1,6 +1,6 @@
 ---
 prenom: Anne-Sophie
-rayon: Polars et romans graphiques
+rayon: Littérature, jeunesse et romans graphiques
 visible: true
 ordre: 1
 ---
