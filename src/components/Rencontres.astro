@@ -17,7 +17,7 @@ const inkSplat = `${base}assets/ink-splat-rencontres.png`;
 const brushStroke = `${base}assets/brush-stroke.png`;
 
 const instagram = infos?.data.instagram ?? '';
-const facebook = infos?.data.facebook ?? '';
+const email = infos?.data.email ?? '';
 
 const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}` : undefined;
 ---
@@ -71,7 +71,7 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
       </div>
       <div data-reveal="up" data-delay="420" class="eve-cta">
         <a href={instagram} target="_blank" rel="noopener" class="pill pill-fill">Les prochaines dates sur Instagram</a>
-        <a href={facebook} target="_blank" rel="noopener" class="pill pill-outline">Facebook</a>
+        <a href={`mailto:${email}?subject=${encodeURIComponent('Réservation')}`} class="pill pill-outline">Réserver par mail</a>
       </div>
     </div>
 
