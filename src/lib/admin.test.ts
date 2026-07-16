@@ -52,8 +52,13 @@ describe('admin config ⇆ content.config consistency', () => {
     const c = byName['evenements'];
     expect(c.folder).toBe('src/content/evenements');
     expect(names(c.fields).sort()).toEqual(
-      ['title', 'date', 'type', 'guest', 'image', 'link', 'published', 'body'].sort()
+      ['title', 'date', 'legende', 'type', 'guest', 'image', 'link', 'published', 'body'].sort()
     );
+    // Free text replacing the whole auto caption (« date — titre ») so
+    // all-day events or registration notes read naturally; optional because
+    // the auto caption is usually enough
+    const legende = c.fields.find((f: any) => f.name === 'legende');
+    expect(legende.required).toBe(false);
     const type = c.fields.find((f: any) => f.name === 'type');
     expect(type.options.map((o: any) => o.value).sort()).toEqual(
       ['soiree', 'rencontre', 'dedicace', 'lecture', 'atelier', 'autre'].sort()

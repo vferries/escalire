@@ -100,7 +100,9 @@ const afficheFor = (eve: (typeof upcoming)[number]) =>
                   <strong>{eve.data.title}</strong>
                 </div>
               )}
-              <p class="polaroid-caption">{`${formatEventDate(eve.data.date, true)} — ${eve.data.title}`}</p>
+              <p class="polaroid-caption">
+                {eve.data.legende ?? `${formatEventDate(eve.data.date, true)} — ${eve.data.title}`}
+              </p>
             </div>
           );
         })
@@ -358,6 +360,8 @@ const afficheFor = (eve: (typeof upcoming)[number]) =>
     font-family: var(--font-hand);
     font-size: 22px;
     color: var(--text-2);
+    /* free-text legende may hold line breaks */
+    white-space: pre-line;
   }
 
   @media (max-width: 720px) {

@@ -7,6 +7,7 @@ const evenements = defineCollection({
   schema: z.object({
     title: z.string().min(1).max(120),
     date: z.coerce.date(),
+    legende: cmsOptional(z.string().max(200)),
     type: z.enum(['soiree', 'rencontre', 'dedicace', 'lecture', 'atelier', 'autre']),
     guest: cmsOptional(z.string().max(80)),
     image: cmsOptional(z.string()),

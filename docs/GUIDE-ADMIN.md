@@ -49,8 +49,12 @@ vérifier l'ISBN ; en dernier recours, ajouter une photo dans « Couverture
 ## Annoncer une rencontre
 
 1. Menu **Rencontres & événements** → **Créer**.
-2. Remplir titre, **date et heure**, type, description ; ajouter l'affiche
+2. Remplir titre, **date**, type, description ; ajouter l'affiche
    (image) et un lien externe si besoin (billetterie, publication Instagram).
+   Sous l'affiche, le site écrit automatiquement « date — titre » (sans
+   l'heure). Pour autre chose — horaire, « toute la journée », mention
+   d'inscription… — remplir **Texte sous l'affiche (libre)**, qui remplace
+   ce texte automatique.
 3. Cocher **Visible sur le site** puis **Enregistrer**.
 4. Le site met en avant le **prochain événement à venir** ; les événements
    passés sont archivés automatiquement chaque nuit — rien à faire.

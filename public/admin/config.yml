@@ -112,7 +112,20 @@ collections:
         label: Date et heure
         widget: datetime
         format: 'YYYY-MM-DDTHH:mm:ss'
-        hint: Les événements passés sont archivés automatiquement chaque nuit.
+        hint: >-
+          L'heure n'apparaît pas sur le site (elle sert à ordonner deux
+          événements le même jour) — utilisez « Texte sous l'affiche » pour
+          l'afficher. Les événements passés sont archivés automatiquement
+          chaque nuit.
+      - name: legende
+        label: Texte sous l'affiche (libre)
+        widget: text
+        required: false
+        maxlength: 200
+        hint: >-
+          Remplace le texte automatique « Mardi 6 octobre 2026 — Titre ».
+          Ex. : « Mardi 6 octobre à 19h, sur inscription », « Toute la
+          journée en librairie ». Laisser vide pour le texte automatique.
       - name: type
         label: Type
         widget: select
