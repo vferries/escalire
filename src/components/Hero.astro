@@ -50,14 +50,16 @@ const brushStroke = `${base}assets/brush-stroke.png`;
       fetchpriority="high"
     />
     <p data-entrance="1" class="hero-subtitle">{sousTitre}</p>
-    <div data-entrance="2" class="hero-slogan">
-      <span
-        aria-hidden="true"
-        class="hero-slogan-brush"
-        style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
-      ></span>
-      <span class="hero-slogan-text">{slogan}</span>
-    </div>
+    {slogan && (
+      <div data-entrance="2" class="hero-slogan">
+        <span
+          aria-hidden="true"
+          class="hero-slogan-brush"
+          style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
+        ></span>
+        <span class="hero-slogan-text">{slogan}</span>
+      </div>
+    )}
     <div data-entrance="3" class="hero-cta">
       <a href="#librairie" class="btn btn-primary">Découvrir la librairie</a>
       <a href="#infos" class="btn btn-outline">Horaires &amp; accès</a>

@@ -72,7 +72,7 @@ const infos = defineCollection({
 const textes = defineCollection({
   loader: file('./src/content/textes.json', { parser: singleEntry('textes') }),
   schema: z.object({
-    slogan: z.string().max(80),
+    slogan: cmsOptional(z.string().max(80)),
     sousTitre: z.string().max(120),
     librairieTitre: z.string().max(120),
     librairieP1: z.string(),

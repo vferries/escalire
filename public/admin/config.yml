@@ -347,6 +347,7 @@ collections:
             label: Slogan (hero)
             widget: string
             maxlength: 80
+            required: false
           - name: sousTitre
             label: Sous-titre (hero)
             widget: string
