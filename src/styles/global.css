@@ -97,6 +97,12 @@ input:focus-visible {
    steps the mask through the frames (in-view reveal via site.js, or the
    inkBloomIn animation for the hero inks that are visible at load), while a
    settling wet blur (inkWet) smooths the discrete steps. */
+/* Essai 2026-07-16 (Vincent) : site sans les taches d'encre. Si l'essai est
+   concluant, retirer le markup .ink-sprite des composants et ce hack avec ;
+   sinon, revert ce commit. */
+.ink-sprite {
+  display: none;
+}
 .ink-sprite {
   -webkit-mask-size: 100% 2000%;
   mask-size: 100% 2000%;
