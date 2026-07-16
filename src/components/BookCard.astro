@@ -13,9 +13,18 @@ const { entry, flip = false } = Astro.props;
 const d = entry.data;
 const base = import.meta.env.BASE_URL;
 const cover = d.couverture ? `${base}${d.couverture.replace(/^\//, '')}` : epagineCoverUrl(d.isbn13);
+// Alido (librairies-occitanie.com) resolves /livre/{isbn13} straight to the
+// book page of the shop's online store.
+const alido = `https://www.librairies-occitanie.com/livre/${d.isbn13}`;
 ---
 <article class:list={['book-card', { 'book-card--flip': flip }]}>
-  <div class="cover">
+  <a
+    class="cover"
+    href={alido}
+    target="_blank"
+    rel="noopener"
+    aria-label={`Commander « ${d.titre ?? ''} » sur Alido`}
+  >
     <img
       src={cover}
       alt={`Couverture du livre ${d.titre ?? ''}`}
@@ -26,7 +35,7 @@ const cover = d.couverture ? `${base}${d.couverture.replace(/^\//, '')}` : epagi
       <strong>{d.titre}</strong>
       <span>{d.auteur}</span>
     </div>
-  </div>
+  </a>
   <div class="book-meta">
     <h3 class="titre">{d.titre}</h3>
     <p class="auteur">{d.auteur} — {d.editeur}</p>
@@ -50,6 +59,7 @@ const cover = d.couverture ? `${base}${d.couverture.replace(/^\//, '')}` : epagi
   }
 
   .cover {
+    display: block;
     position: relative;
     width: 100%;
     height: 460px;
