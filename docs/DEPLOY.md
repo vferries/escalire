@@ -11,13 +11,13 @@
 3. **VPS mutualisé français** (o2switch, Infomaniak) si la librairie préfère un interlocuteur FR unique — plus de maintenance manuelle.
 
 ## Checklist mise en ligne
-- [ ] Redirections 301 depuis les anciennes URLs de escalire.fr (au minimum `/MentionsLegales.html` → `/mentions-legales/`)
+- [x] Redirections 301 depuis les anciennes URLs de escalire.fr (au minimum `/MentionsLegales.html` → `/mentions-legales/`) — meta-refresh + canonical, GitHub Pages ne fait pas de vrai 301 (2026-07-16)
 - [x] Mentions légales reprises du site actuel — page interne `/mentions-legales/` (SP5, contenu actualisé : hébergeur GitHub Pages, volet données personnelles)
 - [ ] Meta locales + schema.org BookStore + sitemap + robots.txt
 - [x] Déclaration RGPD minimale : la carte charge des tuiles CARTO (IP transmise) — bandeau simple ou tuiles proxifiées ; pas d'analytics ou analytics sans cookie (Plausible)
 - [ ] Test Lighthouse mobile > 90 perf / 100 a11y sur la page
-- [ ] Vérifier l'affichage des couvertures epagine depuis le domaine de prod
-- [ ] Bascule escalire.fr : régénérer `robots.txt` (Disallow: /admin/) et `sitemap.xml` (URLs racine), ajuster `site`/`base` dans `astro.config`, mettre à jour `site_url`/`display_url` dans `public/admin/config.yml` et ajouter `escalire.fr` à `ALLOWED_DOMAINS` du Worker OAuth (cf. ADMIN-SETUP.md § 8)
+- [x] Vérifier l'affichage des couvertures epagine depuis le domaine de prod (200 avec referer escalire.fr, 2026-07-16)
+- [x] Bascule escalire.fr : régénérer `robots.txt` (Disallow: /admin/) et `sitemap.xml` (URLs racine), ajuster `site`/`base` dans `astro.config`, mettre à jour `site_url`/`display_url` dans `public/admin/config.yml` et ajouter `escalire.fr` à `ALLOWED_DOMAINS` du Worker OAuth (cf. ADMIN-SETUP.md § 8) — fait le 2026-07-16 (DNS OVH + custom domain GitHub + Worker vérifié : 302 OAuth pour escalire.fr) ; restait à l'écriture : Enforce HTTPS (cert en émission), 4e A record 185.199.111.153, AAAA
 
 Décision SP2 (2026-07-09) : carte au clic — aucun appel aux tuiles CARTO sans action explicite ; bandeau non nécessaire.
 
