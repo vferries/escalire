@@ -1,6 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { selectCoupsDeCoeur, selectCoupsDeCoeurPublies } from '../lib/coupsDeCoeur';
+
+const instagram = (await getEntry('infos', 'infos'))?.data.instagram ?? '';
 
 const base = import.meta.env.BASE_URL;
 
@@ -29,7 +31,21 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
     {links.map(([href, label], i) => (
       <a href={href} class={i === links.length - 1 ? 'nav-cta' : undefined}>{label}</a>
     ))}
+    <a href={instagram} target="_blank" rel="noopener" class="nav-insta" aria-label="Instagram de la librairie">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
+        <circle cx="12" cy="12" r="4.4" />
+        <circle cx="17.6" cy="6.4" r="0.9" fill="currentColor" stroke="none" />
+      </svg>
+    </a>
   </div>
+  <a href={instagram} target="_blank" rel="noopener" class="nav-insta nav-insta--mobile" aria-label="Instagram de la librairie">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
+      <circle cx="12" cy="12" r="4.4" />
+      <circle cx="17.6" cy="6.4" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  </a>
   <button id="nav-burger" aria-expanded="false" aria-controls="nav-panel" aria-label="Ouvrir le menu">
     <span></span><span></span><span></span>
   </button>
@@ -109,6 +125,16 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
     transition: background 0.3s ease;
   }
   .nav-links a.nav-cta:hover { color: var(--paper); background: var(--navy); }
+  .nav-insta {
+    display: flex;
+    align-items: center;
+    color: var(--ink);
+  }
+  .nav-insta:hover { color: var(--red); }
+  /* desktop: the icon lives in .nav-links; the standalone copy is for the
+     mobile bar next to the burger (margin-left:auto pushes the pair right
+     under space-between) */
+  .nav-insta--mobile { display: none; }
 
   /* --- Mobile burger + full-screen panel (spec 2026-07-13) ----------------- */
   #nav-burger {
@@ -271,6 +297,7 @@ const links = allLinks.filter(([, , show]) => show).map(([href, label]): [string
   @media (max-width: 720px) {
     #site-nav { padding: 12px 16px; gap: 14px; }
     .nav-links { display: none; }
+    .nav-insta--mobile { display: flex; margin-left: auto; }
     #nav-burger { display: flex; }
     .nav-panel { display: block; }
   }
