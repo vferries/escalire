@@ -25,6 +25,9 @@ const year = new Date().getFullYear();
       <a href={instagram} target="_blank" rel="noopener">Instagram</a>
       <a href={facebook} target="_blank" rel="noopener">Facebook</a>
       <a href={placeDesLibraires} target="_blank" rel="noopener">Place des Libraires</a>
+      <a
+        href={`mailto:${email}?subject=${encodeURIComponent('Inscription à la newsletter')}&body=${encodeURIComponent("Bonjour,\nJe souhaite m'inscrire à la newsletter de la librairie Escalire.\nMerci !")}`}
+      >Newsletter</a>
       <a href={`${base}mentions-legales/`}>Mentions légales</a>
     </div>
     <p class="footer-copyright">© {year} Librairie Escalire — {telephone} — {email}</p>

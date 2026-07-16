@@ -74,6 +74,10 @@ const afficheFor = (eve: (typeof upcoming)[number]) =>
       <div data-reveal="up" data-delay="420" class="eve-cta">
         <a href={instagram} target="_blank" rel="noopener" class="pill pill-fill">Les prochaines dates sur Instagram</a>
         <a href={`mailto:${email}?subject=${encodeURIComponent('Réservation')}`} class="pill pill-outline">Réserver par mail</a>
+        <a
+          href={`mailto:${email}?subject=${encodeURIComponent('Inscription à la newsletter')}&body=${encodeURIComponent("Bonjour,\nJe souhaite m'inscrire à la newsletter de la librairie Escalire.\nMerci !")}`}
+          class="pill pill-outline"
+        >S'inscrire à la newsletter</a>
       </div>
     </div>
 
