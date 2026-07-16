@@ -78,6 +78,12 @@ const textes = defineCollection({
     librairieTitre: z.string().max(120),
     librairieP1: z.string(),
     librairieP2: z.string(),
+    librairiePhotos: z
+      .array(z.object({ image: z.string().min(1), legende: cmsOptional(z.string().max(120)) }))
+      .min(1)
+      .max(2),
+    equipeTitre: z.string().max(60),
+    equipeIntro: z.string(),
     rayons: z.array(z.string()).min(1),
   }),
 });

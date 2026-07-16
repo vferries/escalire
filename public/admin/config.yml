@@ -375,6 +375,32 @@ collections:
           - name: librairieP2
             label: Paragraphe 2
             widget: text
+          - name: librairiePhotos
+            label: Photos de la section « La librairie »
+            label_singular: Photo
+            widget: list
+            min: 1
+            max: 2
+            hint: 1 ou 2 photos façon polaroid, chacune avec sa légende manuscrite.
+            fields:
+              - name: image
+                label: Photo
+                widget: image
+              - name: legende
+                label: Légende
+                widget: string
+                required: false
+                maxlength: 120
+          - name: equipeTitre
+            label: Titre de la section « L'équipe »
+            widget: string
+            maxlength: 60
+          - name: equipeIntro
+            label: Texte d'introduction de la section « L'équipe »
+            widget: text
+            hint: >-
+              Pensez à accorder le texte au nombre de personnes affichées
+              (« Des libraires qui lisent… » / « Une libraire qui lit… »).
           - name: rayons
             label: Rayons (nuage de la section « La librairie »)
             widget: list

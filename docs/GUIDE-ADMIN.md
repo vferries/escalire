@@ -73,7 +73,9 @@ vérifier l'ISBN ; en dernier recours, ajouter une photo dans « Couverture
 
 - **Équipe** : prénom, portrait (photo carrée de préférence, affichée en
   rond), rayon favori, ordre d'affichage.
-- **Textes du site** : slogan du haut de page et paragraphes « La librairie »
+- **Textes du site** : slogan du haut de page, paragraphes et photos (avec
+  légendes) de « La librairie », titre et texte d'introduction de la section
+  « L'équipe » (à accorder si l'équipe change de taille)
   — à modifier rarement.
 
 ## Enregistrer, et après ?

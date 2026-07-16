@@ -123,8 +123,14 @@ describe('admin config ⇆ content.config consistency', () => {
     const f = byName['textes'].files[0];
     expect(f.file).toBe('src/content/textes.json');
     expect(names(f.fields).sort()).toEqual(
-      ['slogan', 'sousTitre', 'librairieTitre', 'librairieP1', 'librairieP2', 'rayons'].sort()
+      ['slogan', 'sousTitre', 'librairieTitre', 'librairieP1', 'librairieP2', 'rayons',
+       'librairiePhotos', 'equipeTitre', 'equipeIntro'].sort()
     );
+    // 1 or 2 polaroids in the « librairie » card, each an image + caption
+    const photos = f.fields.find((x: any) => x.name === 'librairiePhotos');
+    expect(photos.min).toBe(1);
+    expect(photos.max).toBe(2);
+    expect(names(photos.fields).sort()).toEqual(['image', 'legende'].sort());
     // Optional in the CMS ⇒ the site schema must accept the omitted key too
     // (omit_empty_optional_fields drops it from textes.json on save)
     const slogan = f.fields.find((x: any) => x.name === 'slogan');

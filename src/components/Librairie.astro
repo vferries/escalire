@@ -6,6 +6,7 @@ const titre = textes?.data.librairieTitre ?? '';
 const p1 = textes?.data.librairieP1 ?? '';
 const p2 = textes?.data.librairieP2 ?? '';
 const rayons = textes?.data.rayons ?? [];
+const photos = textes?.data.librairiePhotos ?? [];
 
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
@@ -60,22 +61,20 @@ const chipColors = [
       </div>
     </div>
     <div class="polaroids">
-      <div data-reveal="up" data-delay="120" class="polaroid polaroid--devanture">
-        <img
-          src={`${base}assets/photo-devanture.png`}
-          alt="Devanture de la librairie Escalire"
-          loading="lazy"
-        />
-        <p class="polaroid-caption">Centre commercial Espace 61, Escalquens</p>
-      </div>
-      <div data-reveal="up" data-delay="240" class="polaroid polaroid--interieur">
-        <img
-          src={`${base}assets/photo-interieur.png`}
-          alt="Intérieur de la librairie, entre les rayons"
-          loading="lazy"
-        />
-        <p class="polaroid-caption">Entre les rayons…</p>
-      </div>
+      {photos.map((photo, i) => (
+        <div
+          data-reveal="up"
+          data-delay={120 + i * 120}
+          class:list={['polaroid', i === 0 ? 'polaroid--devanture' : 'polaroid--interieur']}
+        >
+          <img
+            src={`${base}${photo.image.replace(/^\//, '')}`}
+            alt={photo.legende ?? 'Photo de la librairie Escalire'}
+            loading="lazy"
+          />
+          {photo.legende && <p class="polaroid-caption">{photo.legende}</p>}
+        </div>
+      ))}
     </div>
   </div>
 </section>

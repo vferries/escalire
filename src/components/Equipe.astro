@@ -1,10 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 // selectCoupsDeCoeur's shape (visible + ordre) fits equipe members too;
 // reused instead of duplicating the same filter+sort. max=Infinity: no cap.
 import { selectCoupsDeCoeur } from '../lib/coupsDeCoeur';
 
 const members = selectCoupsDeCoeur(await getCollection('equipe'), Infinity);
+const textes = await getEntry('textes', 'textes');
+const titre = textes?.data.equipeTitre ?? "L'équipe";
+const intro = textes?.data.equipeIntro ?? '';
 
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
@@ -30,17 +33,14 @@ const brushStroke = `${base}assets/brush-stroke.png`;
 
     <div class="eq-inner">
       <p data-reveal="up" class="kicker">derrière le comptoir</p>
-      <h2 id="equipe-heading" data-reveal="ink-text" data-delay="80">L'équipe</h2>
+      <h2 id="equipe-heading" data-reveal="ink-text" data-delay="80">{titre}</h2>
       <div
         data-reveal="ink"
         data-delay="220"
         class="brush-underline"
         style={`-webkit-mask-image:url(${brushStroke}); mask-image:url(${brushStroke});`}
       ></div>
-      <p data-reveal="up" data-delay="140" class="intro">
-        Des libraires qui lisent, débattent, et défendent leurs choix — chacun son rayon de prédilection, tous la
-        même envie de vous faire découvrir le bon livre.
-      </p>
+      <p data-reveal="up" data-delay="140" class="intro">{intro}</p>
 
       <div class="eq-grid">
         {members.map((member, i) => (
