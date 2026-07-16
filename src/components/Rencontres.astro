@@ -9,7 +9,8 @@ import { formatEventDate } from '../lib/eventDate';
 const all = await getCollection('evenements');
 const infos = await getEntry('infos', 'infos');
 const { upcoming } = partitionEvents(all, new Date());
-const next = upcoming[0];
+// Up to two dates can coexist in a week: show them fanned out side by side.
+const nextEvents = upcoming.slice(0, 2);
 
 const base = import.meta.env.BASE_URL;
 const featherMask = `${base}assets/feather-mask.png`;
@@ -19,7 +20,8 @@ const brushStroke = `${base}assets/brush-stroke.png`;
 const instagram = infos?.data.instagram ?? '';
 const email = infos?.data.email ?? '';
 
-const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}` : undefined;
+const afficheFor = (eve: (typeof upcoming)[number]) =>
+  eve.data.image ? `${base}${eve.data.image.replace(/^\//, '')}` : undefined;
 ---
 <section id="evenements" class="section evenements" aria-labelledby="evenements-heading">
   <div aria-hidden="true" class="eve-bg">
@@ -75,33 +77,41 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
       </div>
     </div>
 
-    <div data-reveal="up" data-delay="160" class="polaroid">
-      {next ? (
-        next.data.link ? (
-          <a href={next.data.link} target="_blank" rel="noopener" class="polaroid-link" aria-label={next.data.title}>
-            {affiche ? (
-              <img src={affiche} alt={next.data.title} loading="lazy" />
-            ) : (
-              <div class="polaroid-fallback" aria-hidden="true">
-                <strong>{next.data.title}</strong>
-              </div>
-            )}
-          </a>
-        ) : affiche ? (
-          <img src={affiche} alt={next.data.title} loading="lazy" />
-        ) : (
-          <div class="polaroid-fallback" aria-hidden="true">
-            <strong>{next.data.title}</strong>
-          </div>
-        )
+    <div data-reveal="up" data-delay="160" class:list={['polaroids', { fan: nextEvents.length > 1 }]}>
+      {nextEvents.length ? (
+        nextEvents.map((eve) => {
+          const affiche = afficheFor(eve);
+          return (
+            <div class="polaroid">
+              {eve.data.link ? (
+                <a href={eve.data.link} target="_blank" rel="noopener" class="polaroid-link" aria-label={eve.data.title}>
+                  {affiche ? (
+                    <img src={affiche} alt={eve.data.title} loading="lazy" />
+                  ) : (
+                    <div class="polaroid-fallback" aria-hidden="true">
+                      <strong>{eve.data.title}</strong>
+                    </div>
+                  )}
+                </a>
+              ) : affiche ? (
+                <img src={affiche} alt={eve.data.title} loading="lazy" />
+              ) : (
+                <div class="polaroid-fallback" aria-hidden="true">
+                  <strong>{eve.data.title}</strong>
+                </div>
+              )}
+              <p class="polaroid-caption">{`${formatEventDate(eve.data.date, true)} — ${eve.data.title}`}</p>
+            </div>
+          );
+        })
       ) : (
-        <div class="polaroid-fallback" aria-hidden="true">
-          <strong>Prochaine rencontre — affiche à venir</strong>
+        <div class="polaroid">
+          <div class="polaroid-fallback" aria-hidden="true">
+            <strong>Prochaine rencontre — affiche à venir</strong>
+          </div>
+          <p class="polaroid-caption">Prochaine rencontre — affiche à venir</p>
         </div>
       )}
-      <p class="polaroid-caption">
-        {next ? `${formatEventDate(next.data.date, true)} — ${next.data.title}` : 'Prochaine rencontre — affiche à venir'}
-      </p>
     </div>
   </div>
 </section>
@@ -280,14 +290,39 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
     transform: translateY(-2px);
   }
 
-  .polaroid {
+  .polaroids {
     justify-self: center;
+    width: min(400px, 100%);
+  }
+  .polaroid {
     background: var(--paper);
     padding: 16px 16px 20px;
     border-radius: 6px;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
     transform: rotate(1.6deg);
-    width: min(400px, 100%);
+  }
+  /* Two dates the same week: fan the polaroids out. The hovered one
+     straightens and comes to the front. */
+  .polaroids.fan {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .fan .polaroid {
+    width: min(340px, 52%);
+    transition: transform 0.3s ease;
+  }
+  .fan .polaroid:first-child {
+    transform: rotate(-3.5deg) translateY(14px);
+  }
+  .fan .polaroid:last-child {
+    transform: rotate(2.5deg) translateY(-6px);
+    margin-left: -10px;
+  }
+  .fan .polaroid:hover {
+    transform: rotate(0deg) scale(1.03);
+    z-index: 1;
   }
   .polaroid-link {
     display: block;
@@ -328,5 +363,18 @@ const affiche = next?.data.image ? `${base}${next.data.image.replace(/^\//, '')}
   @media (max-width: 720px) {
     .evenements { padding: 72px 20px; }
     .polaroid { transform: rotate(0.8deg); }
+    /* No room to fan on narrow viewports: stack the two cards instead */
+    .polaroids.fan {
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      width: min(400px, 100%);
+    }
+    .fan .polaroid {
+      width: 100%;
+      margin-left: 0;
+    }
+    .fan .polaroid:first-child { transform: rotate(-1.2deg) translateY(0); }
+    .fan .polaroid:last-child { transform: rotate(0.8deg); }
   }
 </style>
